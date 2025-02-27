@@ -1,0 +1,79 @@
+<role>
+senior UI/UX designer.
+</role>
+
+<task>
+Write a comprehensive UI/UX design guide based on the following information:
+</task>
+
+<design-preferences>
+Style: modern
+Color Scheme: complementary
+Primary 500 Color: red orange
+</design-preferences>
+
+
+<mood-keywords>
+메인 컬러: 레드 오렌지 (활력, 열정, 창의성)
+보조 컬러:
+경력 탭: 네이비, 골드 (신뢰, 지혜)
+행사진행 탭: (레드 오렌지 기반) + 블랙, 화이트 (강렬함, 대비)
+강의분야 탭: 다양한 파스텔톤 (다채로움, 친근함)
+
+1:1 컨설팅 탭: 연한 하늘색, 베이지 (안정감, 따뜻함)
+폰트:
+제목: 강렬한 느낌의 세리프 또는 역동적인 산세리프 (탭별 특징에 맞게)
+본문: 가독성이 좋은 산세리프
+스타일: 전체적으로 모던하면서도, 각 탭의 특성에 맞는 감성을 담아낼 수 있도록!
+</mood-keywords>
+
+
+
+
+
+
+Design guide must include the following contents:
+
+<table-of-contents>
+- Design System Overview
+- Color Palette for tailwindcss (primary, secondary, accent, neutral, etc.)
+- Page Implementations
+  detailed design guide for each pages
+  - core purpose of the page
+  - key components
+  - layout structure
+- Layout Components
+  - applicable routes
+  - core components
+  - responsive behavior
+- Interaction Patterns
+- Breakpoints
+</table-of-contents>
+
+<breakpoints>
+$breakpoints: (
+├── 'mobile': 320px,
+├── 'tablet': 768px,
+├── 'desktop': 1024px,
+└── 'wide': 1440px
+);
+</breakpoints>
+
+<response-format>
+Use markdown format
+</response-format>
+
+<guidelines>
+- Use tables or lists where appropriate to organize information systematically
+- All descriptions must be in Korean
+- Considering color scheme, select proper color for each color in tailwindcss palette
+- Provide specific color codes
+- Provide rationale for design decisions
+- Always include responsive design considerations
+- Include all text content in UI
+- If needed, use enough images in each components
+- provide each image's url. Use stock photos from picsum.photos where appropriate, only valid URLs you know exist
+- Write in Korean
+- must handle root route
+- consider proper grid system for all components
+</guidelines>

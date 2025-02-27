@@ -18,13 +18,13 @@ export default function Header() {
       }
     }
 
-    const links = document.querySelectorAll('a[href^="#"]')
+    const links = document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')
     for(const link of links) {
-      link.addEventListener("click", smoothScroll)
+      link.addEventListener("click", smoothScroll as EventListener)
     }
 
     return () => {
-      for(const link of links) {
+      for (const link of links) {
         link.removeEventListener("click", smoothScroll);
       }
     }

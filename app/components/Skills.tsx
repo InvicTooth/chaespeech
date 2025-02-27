@@ -22,7 +22,7 @@ export default function Skills() {
                 <span>{skill.level}%</span>
               </div>
               <div className="w-full bg-primary rounded-full h-2.5">
-                <div className="bg-tertiary h-2.5 rounded-full" style={{ width: `${skill.level}%` }}></div>
+                <div className="bg-tertiary h-2.5 rounded-full" style={{ width: `${skill.level}%` }}/>
               </div>
             </div>
           ))}

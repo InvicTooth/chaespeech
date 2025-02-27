@@ -7,7 +7,7 @@ export default function Hero() {
         <div className="md:w-1/2">
           <h1 className="text-4xl md:text-6xl font-bold mb-4">박채은</h1>
           <h2 className="text-2xl md:text-3xl mb-6">아나운서</h2>
-          <p className="text-lg mb-8">특별한 순간, 풍부한 경험과 신뢰도 높은 18년 차 아나운서가 함께 하겠습니다</p>
+          <p className="text-lg mb-8">특별한 순간, 풍부한 경험과 신뢰도 높은 18년차 아나운서가 함께 하겠습니다</p>
         </div>
         <div className="md:w-1/2 mt-12 md:mt-0">
           <Image
