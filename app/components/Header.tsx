@@ -9,32 +9,6 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const currentPath = usePathname();
 
-  useEffect(() => {
-    const smoothScroll = (e: MouseEvent) => {
-      const target = e.target as HTMLAnchorElement
-      if (target.hash) {
-        e.preventDefault()
-        const element = document.querySelector(target.hash)
-        if (element) {
-          element.scrollIntoView({
-            behavior: "smooth",
-          })
-        }
-      }
-    }
-
-    const links = document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')
-    for(const link of links) {
-      link.addEventListener("click", smoothScroll as EventListener)
-    }
-
-    return () => {
-      for (const link of links) {
-        link.removeEventListener("click", smoothScroll);
-      }
-    }
-  }, [])
-
   const navLinks = [
     { href: "/career", label: "경력"},
     { href: "/lectures", label: "강의 분야"},
