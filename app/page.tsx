@@ -185,7 +185,7 @@ export default function HomePage() {
           />
           <StatCard 
             icon="🎪"
-            value={'100+'}
+            value={'700+'}
             label="행사 진행"
             color="var(--color-event-black)"
             unit="건"
