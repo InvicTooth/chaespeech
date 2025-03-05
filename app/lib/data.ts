@@ -81,7 +81,12 @@ export async function fetchCardData() {
     };
   } catch (error) {
     console.error('Database Error:', error);
-    throw new Error(`Failed to fetch card data. ${error}`);
+    // throw new Error(`Failed to fetch card data. ${error}`);
+    return {
+      numberOfCustomers: '0',
+      numberOfInvoices: '0',
+      totalPaidInvoices: '0',
+      totalPendingInvoices: '0',}
   }
 }
 
