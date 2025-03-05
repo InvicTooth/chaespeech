@@ -1,9 +1,9 @@
-import CardWrapper from '@/backup/ui/dashboard/cards';
-import RevenueChart from '@/backup/ui/dashboard/revenue-chart';
-import LatestInvoices from '@/backup/ui/dashboard/latest-invoices';
-import { lusitana } from '@/backup/ui/fonts';
+import CardWrapper from '@/app/ui/dashboard/cards';
+import RevenueChart from '@/app/ui/dashboard/revenue-chart';
+import LatestInvoices from '@/app/ui/dashboard/latest-invoices';
+import { lusitana } from '@/app/ui/fonts';
 import { Suspense } from 'react';
-import { RevenueChartSkeleton, LatestInvoicesSkeleton, CardsSkeleton } from '@/backup/ui/skeletons';
+import { RevenueChartSkeleton, LatestInvoicesSkeleton, CardsSkeleton } from '@/app/ui/skeletons';
 
 export default async function Page() {
   return (

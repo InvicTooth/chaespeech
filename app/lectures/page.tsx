@@ -49,7 +49,7 @@ export default function Lectures() {
 
         {/* 강의 실적 영역 */}
         <section className='mb-16'>
-          <h2 className="text-2xl font-bold mb-8">강의 실적</h2>
+          <h2 className="text-2xl font-bold mb-8">주요 강의 실적</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {lectures.map((lecture, index) => (
               <div 
