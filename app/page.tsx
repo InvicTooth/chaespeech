@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { mainCareer, etcCareer, lectures, events } from './mock/data';
+import { mainCareer, etcCareer, events } from './mock/data';
 import Image from 'next/image';
 
 export default function HomePage() {

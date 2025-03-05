@@ -1,6 +1,6 @@
 "use client"
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Menu } from 'lucide-react';
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
