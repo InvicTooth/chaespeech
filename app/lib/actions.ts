@@ -132,21 +132,21 @@ export async function authenticate(
 
 export async function signInWithGoogle() {
   try {
-    await signIn('google');
+    await signIn('google', { redirect: true, redirectTo: '/dashboard' } );
   } catch (error) {
     console.error('Google Sign In Error:', error);
   }
 }
 export async function signInWithNaver() {
   try {
-    await signIn('naver');
+    await signIn('naver', { redirect: true, redirectTo: '/dashboard' } );
   } catch (error) {
     console.error('Naver Sign In Error:', error);
   }
 }
 export async function signInWithKakao() {
   try {
-    await signIn('kakao');
+    await signIn('kakao', { redirect: true, redirectTo: '/dashboard' } );
   } catch (error) {
     console.error('Kakao Sign In Error:', error);
   }

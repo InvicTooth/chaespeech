@@ -40,11 +40,11 @@ export async function fetchLatestInvoices() {
       take: 5,
     });
 
-    const latestInvoices = data.map((invoice) => ({
-      ...invoice,
-      amount: formatCurrency(invoice.amount),
-    }));
-    return latestInvoices;
+    // const latestInvoices = data.map((invoice) => ({
+    //   ...invoice,
+    //   amount: formatCurrency(invoice.amount),
+    // }));
+    return data;
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch the latest invoices.');
