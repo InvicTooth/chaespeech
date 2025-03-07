@@ -1,22 +1,28 @@
-import postgres from 'postgres';
-
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+import { prisma } from '@/prisma/client';
 
 async function listInvoices() {
-	const data = await sql`
-    SELECT invoices.amount, customers.name
-    FROM invoices
-    JOIN customers ON invoices.customer_id = customers.id
-    WHERE invoices.amount > 500;
-  `;
+  const data = await prisma.invoices.findMany({
+    where: {
+      amount: {
+        gt: 500,
+      },
+    },
+    include: {
+      customers: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
 
 	return data;
 }
 
 export async function GET() {
   try {
-  	return Response.json(await listInvoices());
+    return Response.json(await listInvoices());
   } catch (error) {
-  	return Response.json({ error }, { status: 500 });
+    return Response.json({ error }, { status: 500 });
   }
 }

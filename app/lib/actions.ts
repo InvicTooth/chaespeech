@@ -1,11 +1,12 @@
 'use server';
 
 import {z} from 'zod';
-import postgres from 'postgres';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import {signIn} from '@/auth';
+import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
+import { prisma } from '@/prisma/client';
+
 
 export type State = {
   errors?: {
@@ -15,8 +16,6 @@ export type State = {
   };
   message?: string | null;
 };
-
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
 const FormSchema = z.object({
   id:z.string(),
@@ -44,12 +43,16 @@ export async function createInvoice(prevState:State, formData: FormData) {
   const amountInCents = amount * 100;
   const date = new Date().toISOString().split('T')[0];
 
-  try{
-    await sql`
-    INSERT INTO invoices (customer_id, amount, status, date)
-    VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
-  `;
-  }catch(error){
+  try {
+    await prisma.invoices.create({
+      data: {
+        customer_id: customerId,
+        amount: amountInCents,
+        status,
+        date,
+      },
+    });
+  } catch (error){
     return {
       message: `Database Error: Failed to Create Invoice. \n ${error}`,
     };
@@ -80,11 +83,14 @@ export async function updateInvoice(id: string, prevState:State, formData: FormD
   const amountInCents = amount * 100;
 
   try{
-    await sql`
-    UPDATE invoices
-    SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
-    WHERE id = ${id}
-  `;
+    await prisma.invoices.update({
+      where: { id },
+      data: {
+        customer_id: customerId,
+        amount: amountInCents,
+        status,
+      },
+    });
   }catch(error){
     return { message: `Database Error: Failed to Update Invoice. \n${error}` };
   }
@@ -94,8 +100,14 @@ export async function updateInvoice(id: string, prevState:State, formData: FormD
 }
 
 export async function deleteInvoice(id: string) {
-    // throw new Error('Failed to Delete Invoice');
-  await sql`DELETE FROM invoices WHERE id = ${id}`;
+  try{
+    await prisma.invoices.delete({
+      where: { id },
+    });
+  }catch(error){
+    return { message: `Database Error: Failed to Delete Invoice. \n${error}` };
+  }
+  
   revalidatePath('/dashboard/invoices');
 }
 
@@ -115,5 +127,27 @@ export async function authenticate(
       }
     }
     throw error;
+  }
+}
+
+export async function signInWithGoogle() {
+  try {
+    await signIn('google');
+  } catch (error) {
+    console.error('Google Sign In Error:', error);
+  }
+}
+export async function signInWithNaver() {
+  try {
+    await signIn('naver');
+  } catch (error) {
+    console.error('Naver Sign In Error:', error);
+  }
+}
+export async function signInWithKakao() {
+  try {
+    await signIn('kakao');
+  } catch (error) {
+    console.error('Kakao Sign In Error:', error);
   }
 }
