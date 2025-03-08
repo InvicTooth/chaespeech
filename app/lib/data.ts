@@ -4,14 +4,14 @@ import type {
   // InvoiceForm,
   InvoicesTable,
   // LatestInvoiceRaw,
-  // Revenue,
+  Revenue,
 } from './definitions';
 import { formatCurrency } from './utils';
 import { prisma } from '@/prisma/client';
 
 export async function fetchRevenue() {
   try {
-    const data = await prisma.revenue.findMany({
+    const data:Revenue[] = await prisma.revenue.findMany({
 
     });
 
@@ -116,7 +116,7 @@ export async function fetchFilteredInvoices(
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   try {
-    const invoices = await prisma.$queryRaw<InvoicesTable[]>`
+    const invoices:InvoicesTable[] = await prisma.$queryRaw<InvoicesTable[]>`
       SELECT
         invoices.id,
         invoices.amount,
@@ -146,7 +146,7 @@ export async function fetchFilteredInvoices(
 
 export async function fetchInvoicesPages(query: string) {
   try {
-    const data = await prisma.$queryRaw<[{ count: string }]>`SELECT COUNT(*)
+    const data:[{ count: string }] = await prisma.$queryRaw<[{ count: string }]>`SELECT COUNT(*)
     FROM invoices
     JOIN customers ON invoices.customer_id = customers.id
     WHERE
