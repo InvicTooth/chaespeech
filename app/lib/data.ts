@@ -40,7 +40,7 @@ export async function fetchLatestInvoices() {
       take: 5,
     });
 
-    const latestInvoices = data.map((invoice) => ({
+    const latestInvoices = data.map((invoice: any) => ({
       ...invoice,
       amount: formatCurrency(invoice.amount),
     }));
