@@ -1,4 +1,3 @@
-import type { Prisma } from '@prisma/client';
 import type {
   // CustomerField,
   CustomersTableType,
@@ -24,8 +23,21 @@ export async function fetchRevenue() {
 }
 
 export async function fetchLatestInvoices() {
+  type InvoiceWithCustomer = {
+        customers: {
+            name: string;
+            email: string;
+            image_url: string;
+        };
+    } & {
+        id: string;
+        customer_id: string;
+        amount: number;
+        status: string;
+        date: Date;
+    };
   try {
-    const data = await prisma.invoices.findMany({
+    const data:InvoiceWithCustomer[]= await prisma.invoices.findMany({
       orderBy: {
         date: 'desc',
       },
@@ -41,19 +53,7 @@ export async function fetchLatestInvoices() {
       take: 5,
     });
 
-    const latestInvoices = data.map((invoice:{
-    customers: {
-        name: string;
-        email: string;
-        image_url: string;
-    };
-} & {
-    id: string;
-    customer_id: string;
-    amount: number;
-    status: string;
-    date: Date;
-}) => ({
+    const latestInvoices = data.map((invoice) => ({
       ...invoice,
       amount: formatCurrency(invoice.amount),
     }));
@@ -65,6 +65,12 @@ export async function fetchLatestInvoices() {
 }
 
 export async function fetchCardData() {
+  type InvoiceStatusSum = {
+        status: string;
+        _sum: {
+            amount: number | null;
+        };
+    }[];
   try {
     const invoiceCountPromise = prisma.invoices.count();
     const customerCountPromise = prisma.customers.count();
@@ -84,18 +90,10 @@ export async function fetchCardData() {
     const numberOfInvoices = Number(data[0] ?? '0');
     const numberOfCustomers = Number(data[1] ?? '0');
     const totalPaidInvoices = formatCurrency(
-      data[2].find((invoice:Prisma.PickEnumerable<Prisma.InvoicesGroupByOutputType, "status"[]> & {
-    _sum: {
-        amount: number | null;
-    };
-}) => invoice.status === 'paid')?._sum.amount ?? 0,
+      (data[2] as InvoiceStatusSum).find((invoice) => invoice.status === 'paid')?._sum.amount ?? 0,
     );
     const totalPendingInvoices = formatCurrency(
-      data[2].find((invoice:Prisma.PickEnumerable<Prisma.InvoicesGroupByOutputType, "status"[]> & {
-    _sum: {
-        amount: number | null;
-    };
-}) => invoice.status === 'pending')?._sum.amount ?? 0,
+      (data[2] as InvoiceStatusSum).find((invoice) => invoice.status === 'pending')?._sum.amount ?? 0,
     );
 
     return {
