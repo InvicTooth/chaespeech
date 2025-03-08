@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import type {
   // CustomerField,
   CustomersTableType,
@@ -83,10 +84,18 @@ export async function fetchCardData() {
     const numberOfInvoices = Number(data[0] ?? '0');
     const numberOfCustomers = Number(data[1] ?? '0');
     const totalPaidInvoices = formatCurrency(
-      data[2].find((invoice) => invoice.status === 'paid')?._sum.amount ?? 0,
+      data[2].find((invoice:Prisma.PickEnumerable<Prisma.InvoicesGroupByOutputType, "status"[]> & {
+    _sum: {
+        amount: number | null;
+    };
+}) => invoice.status === 'paid')?._sum.amount ?? 0,
     );
     const totalPendingInvoices = formatCurrency(
-      data[2].find((invoice) => invoice.status === 'pending')?._sum.amount ?? 0,
+      data[2].find((invoice:Prisma.PickEnumerable<Prisma.InvoicesGroupByOutputType, "status"[]> & {
+    _sum: {
+        amount: number | null;
+    };
+}) => invoice.status === 'pending')?._sum.amount ?? 0,
     );
 
     return {
