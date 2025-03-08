@@ -203,7 +203,7 @@ export async function fetchCustomers() {
 
 export async function fetchFilteredCustomers(query: string) {
   try {
-    const data = await prisma.$queryRaw<CustomersTableType[]>`
+    const data:CustomersTableType[]= await prisma.$queryRaw<CustomersTableType[]>`
 		SELECT
       customers.id,
       customers.name,
