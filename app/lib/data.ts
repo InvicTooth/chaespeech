@@ -3,7 +3,7 @@ import type {
   CustomersTableType,
   // InvoiceForm,
   InvoicesTable,
-  // LatestInvoiceRaw,
+  LatestInvoiceRaw,
   // Revenue,
 } from './definitions';
 import { formatCurrency } from './utils';
@@ -40,11 +40,11 @@ export async function fetchLatestInvoices() {
       take: 5,
     });
 
-    // const latestInvoices = data.map((invoice) => ({
-    //   ...invoice,
-    //   amount: formatCurrency(invoice.amount),
-    // }));
-    return data;
+    const latestInvoices = data.map((invoice) => ({
+      ...invoice,
+      amount: formatCurrency(invoice.amount),
+    }));
+    return latestInvoices;
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch the latest invoices.');

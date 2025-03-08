@@ -41,7 +41,7 @@ export async function createInvoice(prevState:State, formData: FormData) {
   }
   const { customerId, amount, status } = validatedFields.data;
   const amountInCents = amount * 100;
-  const date = new Date().toISOString().split('T')[0];
+  const date = new Date().toISOString();
 
   try {
     await prisma.invoices.create({
@@ -131,23 +131,11 @@ export async function authenticate(
 }
 
 export async function signInWithGoogle() {
-  try {
-    await signIn('google', { redirect: true, redirectTo: '/dashboard' } );
-  } catch (error) {
-    console.error('Google Sign In Error:', error);
-  }
+  await signIn('google', { redirect: true, redirectTo: '/dashboard' } );
 }
 export async function signInWithNaver() {
-  try {
-    await signIn('naver', { redirect: true, redirectTo: '/dashboard' } );
-  } catch (error) {
-    console.error('Naver Sign In Error:', error);
-  }
+  await signIn('naver', { redirect: true, redirectTo: '/dashboard' } );
 }
 export async function signInWithKakao() {
-  try {
-    await signIn('kakao', { redirect: true, redirectTo: '/dashboard' } );
-  } catch (error) {
-    console.error('Kakao Sign In Error:', error);
-  }
+  await signIn('kakao', { redirect: true, redirectTo: '/dashboard' } );
 }
