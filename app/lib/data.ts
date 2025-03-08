@@ -3,7 +3,7 @@ import type {
   CustomersTableType,
   // InvoiceForm,
   InvoicesTable,
-  // LatestInvoiceRaw,
+  LatestInvoiceRaw,
   // Revenue,
 } from './definitions';
 import { formatCurrency } from './utils';
@@ -40,7 +40,19 @@ export async function fetchLatestInvoices() {
       take: 5,
     });
 
-    const latestInvoices = data.map((invoice) => ({
+    const latestInvoices = data.map((invoice:{
+    customers: {
+        name: string;
+        email: string;
+        image_url: string;
+    };
+} & {
+    id: string;
+    customer_id: string;
+    amount: number;
+    status: string;
+    date: Date;
+}) => ({
       ...invoice,
       amount: formatCurrency(invoice.amount),
     }));
