@@ -104,11 +104,10 @@ export async function deleteInvoice(id: string) {
     await prisma.invoices.delete({
       where: { id },
     });
+    revalidatePath('/dashboard/invoices');
   }catch(error){
     return { message: `Database Error: Failed to Delete Invoice. \n${error}` };
   }
-  
-  revalidatePath('/dashboard/invoices');
 }
 
 export async function authenticate(
