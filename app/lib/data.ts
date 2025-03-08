@@ -3,7 +3,7 @@ import type {
   CustomersTableType,
   // InvoiceForm,
   InvoicesTable,
-  LatestInvoiceRaw,
+  // LatestInvoiceRaw,
   // Revenue,
 } from './definitions';
 import { formatCurrency } from './utils';
