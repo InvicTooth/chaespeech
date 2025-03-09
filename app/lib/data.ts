@@ -1,7 +1,7 @@
 import type {
   // CustomerField,
   CustomersTableType,
-  // InvoiceForm,
+  InvoiceForm,
   InvoicesTable,
   // LatestInvoiceRaw,
   Revenue,
@@ -175,7 +175,7 @@ export async function fetchInvoiceById(id: string) {
 
     invoice.amount /= 100;
 
-    return invoice;
+    return invoice as InvoiceForm;
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch invoice.');
