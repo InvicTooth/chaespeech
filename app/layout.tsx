@@ -1,10 +1,10 @@
-import "./globals.css"
+import "@/app/globals.css";
 
-import { inter } from "./ui/fonts"
+import { inter } from "@/app/ui/fonts";
 import type React from "react"
-import type { Metadata } from "next"
-import Header from "./components/Header"
-import Footer from "./components/Footer"
+import type { Metadata } from "next";
+import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "next-themes";
 
 export const metadata:Metadata = {
   title: {
@@ -21,13 +21,14 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ko">
-      <body className={`${inter.className} bg-quaternary text-primary`}>
-        <Header />
-        {children}
-        <Footer />
-        </body>
-    </html>
-  )
+			<html lang="ko" suppressHydrationWarning>
+				<body className={`${inter.className} bg-quaternary text-primary`}>
+					<ThemeProvider>
+						{children}
+						<Toaster />
+					</ThemeProvider>
+				</body>
+			</html>
+		);
 }
 

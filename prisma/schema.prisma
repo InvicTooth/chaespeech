@@ -7,31 +7,78 @@ datasource db {
   url      = env("POSTGRES_PRISMA_URL")
 }
 
-model customers {
-  id        String     @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  name      String     @db.VarChar(255)
-  email     String     @db.VarChar(255)
-  image_url String     @db.VarChar(255)
-  invoices  invoices[]
+model User {
+  id            String          @id @default(cuid())
+  name          String?
+  email         String          @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  accounts      Account[]
+  Activity      Activity[]
+  Authenticator Authenticator[]
+  sessions      Session[]
 }
 
-model invoices {
-  id          String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  customer_id String    @db.Uuid
-  amount      Int
-  status      String    @db.VarChar(255)
-  date        DateTime  @db.Date
-  customers   customers @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
 }
 
-model revenue {
-  month   String @unique @db.VarChar(4)
-  revenue Int
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model users {
-  id       String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  name     String @db.VarChar(255)
-  email    String @unique
-  password String
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+  user                 User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, credentialID])
+}
+
+model Activity {
+  id        BigInt   @id @default(autoincrement())
+  date      DateTime @default(now()) @db.Timestamptz(6)
+  type      String
+  title     String
+  userId    String
+  content   String   @default("")
+  mediaUrl  String   @default("")
+  isDeleted Boolean  @default(false)
+  User      User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
