@@ -6,11 +6,17 @@ const CareerSection = () => {
 	return (
 		<motion.section
 			initial="hidden"
-			whileInView="visible"
-			viewport={{ once: true }}
+			animate="visible"
 			className="mb-20 text-[var(--color-career-navy)]"
 		>
-			<motion.h2 className="text-title mb-8">경력</motion.h2>
+			<motion.h2
+				initial={{ opacity: 0, y: 0 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ duration: 0.5, ease: "easeInOut", staggerChildren: 0.2 }}
+				className="text-title mb-8"
+			>
+				경력
+			</motion.h2>
 			<motion.div
 				className="grid grid-cols-1 md:grid-cols-2 gap-8"
 				initial={{ opacity: 0, y: 20 }}

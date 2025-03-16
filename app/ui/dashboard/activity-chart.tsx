@@ -1,5 +1,4 @@
-import { generateYAxis } from '@/app/lib/utils';
-import { lusitana } from '@/app/ui/fonts';
+import { generateYAxis } from "@/app/lib/utils";
 import { fetchActivitiesGroupByMonth } from "@/app/lib/activity";
 import { Calendar } from 'lucide-react';
 
@@ -23,9 +22,7 @@ export default async function ActivityChart() {
 
   return (
 			<div className="w-full md:col-span-4">
-				<h2 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
-					Recent Revenue
-				</h2>
+				<h2 className={"mb-4 text-xl md:text-2xl"}>월간 활동 통계</h2>
 				{/* NOTE: Uncomment this code in Chapter 7 */}
 
 				<div className="rounded-xl bg-gray-50 p-4">
@@ -47,7 +44,7 @@ export default async function ActivityChart() {
 								<div
 									className="w-full rounded-md bg-blue-300"
 									style={{
-										height: `${(chartHeight / topLabel) * activity.count}px`,
+										height: `${(chartHeight / topLabel) * Number(activity.count)}px`,
 									}}
 								/>
 								<p className="-rotate-90 text-sm text-gray-400 sm:rotate-0">

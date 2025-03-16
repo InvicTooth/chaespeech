@@ -1,7 +1,7 @@
 import NextAuth from 'next-auth';
 import Google from 'next-auth/providers/google';
-// import Naver from 'next-auth/providers/naver';
-// import Kakao from 'next-auth/providers/kakao';
+import Naver from 'next-auth/providers/naver';
+import Kakao from 'next-auth/providers/kakao';
 import { authConfig } from './auth.config';
 import { prisma } from '@/prisma/client';
 import { PrismaAdapter } from "@auth/prisma-adapter";
@@ -24,7 +24,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
     Google,
-    // Naver,
-    // Kakao,
+    Naver,
+    Kakao,
   ],
 });

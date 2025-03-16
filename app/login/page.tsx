@@ -1,24 +1,26 @@
-import LoginForm from '../ui/login-form';
-import { Suspense } from 'react';
-import type { Metadata } from 'next';
+import { LoginForm } from "@/components/login-form";
+import Link from "next/link";
+import { MessageCircleMore } from "lucide-react";
+
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Login',
+	title: "Login",
 };
- 
+
 export default function LoginPage() {
-  return (
-    <main className="flex items-center justify-center md:h-screen">
-      <div className="relative mx-auto flex w-full max-w-[400px] flex-col space-y-2.5 p-4 md:-mt-32">
-        <div className="flex h-20 w-full items-end rounded-lg bg-blue-500 p-3 md:h-36">
-          <div className="w-32 text-white md:w-36">
-            {/* <AcmeLogo /> */}
-          </div>
-        </div>
-        <Suspense>
-          <LoginForm />
-        </Suspense>
-      </div>
-    </main>
-  );
+	return (
+		<div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
+			<div className="flex w-full max-w-sm flex-col gap-6">
+				<Link
+					href="/"
+					className="flex items-center gap-2 self-center font-medium"
+				>
+					<MessageCircleMore />
+					Chaespeech 관리자
+				</Link>
+				<LoginForm />
+			</div>
+		</div>
+	);
 }

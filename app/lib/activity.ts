@@ -6,7 +6,7 @@ import { prisma } from '@/prisma/client';
 import { z } from 'zod';
 import { auth } from '@/auth';
 
-export async function fetchActivitiesByType(){
+export async function fetchActivitiesByType() {
   const session = await auth();
   if (session?.user?.id == null)
     redirect('/login');
@@ -25,7 +25,11 @@ export async function fetchActivitiesByType(){
   return activitiesByType;
 }
 
-export async function fetchActivities(take = 10, skip = 0) {
+export async function fetchLatestActivities() {
+  return await fetchFilteredActivities("", 1, 10);
+}
+
+export async function fetchFilteredActivities(query = '', page = 1, take = 10) {
   const session = await auth();
   if (session?.user?.id == null)
     redirect('/login');
@@ -33,19 +37,39 @@ export async function fetchActivities(take = 10, skip = 0) {
   const activities = await prisma.activity.findMany({
     where: {
       userId: session.user.id,
+      OR: [
+        { type: { contains: query } },
+        { title: { contains: query } },
+        { content: { contains: query } },
+      ]
     },
     orderBy: {
-      id: 'desc',
+      date: 'desc',
     },
-    skip: skip,
     take: take,
+    skip: (page - 1) * take,
   });
 
   return activities;
 }
 
-export async function fetchLatestActivities(){
-  return fetchActivities(5, 0);
+export async function fetchFilteredActivitiesCount(query: string) {
+  const session = await auth();
+  if (session?.user?.id == null)
+    redirect('/login');
+
+  const count = await prisma.activity.count({
+    where: {
+      userId: session.user.id,
+      OR: [
+        { type: { contains: query } },
+        { title: { contains: query } },
+        { content: { contains: query } },
+      ]
+    },
+  });
+
+  return count;
 }
 
 export async function fetchActivitiesGroupByMonth() {
@@ -55,7 +79,7 @@ export async function fetchActivitiesGroupByMonth() {
 
   try {
     const activitiesByMonth = await prisma.$queryRaw<
-      { yearMonth: string; count: number }[]
+      { yearMonth: string; count: bigint }[]
     >`
       SELECT
         to_char(date, 'YYYY-MM') AS "yearMonth",
@@ -79,18 +103,29 @@ export async function fetchActivitiesGroupByMonth() {
   }
 }
 
-export async function createActivity(prevState: { message: string|null, errors: string|null}, formData: FormData) {
+export type ActivityFormActionState = {
+  message?: string | null,
+  errors?: {
+    title?: string[];
+    type?: string[];
+    date?: string[];
+    content?: string[];
+    mediaUrl?: string[];
+  }
+};
+
+const FormSchema = z.object({
+  title: z.string({ required_error: 'Title is required' }).min(1, { message: 'Title is required' }),
+  type: z.string({ required_error: 'Type is required' }).min(1, { message: 'Type is required' }),
+  date: z.coerce.date({ required_error: 'Date is required' }),
+  content: z.string().optional(),
+  mediaUrl: z.string().optional(),
+});
+
+export async function createActivity(prevState: ActivityFormActionState, formData: FormData) {
   const session = await auth();
   if (session?.user?.id == null)
     redirect('/login');
-
-  const FormSchema = z.object({
-    title: z.string({ required_error: 'Title is required' }).min(1, { message: 'Title is required' }),
-    type: z.string({ required_error: 'Type is required' }).min(1, { message: 'Type is required' }),
-    date: z.coerce.date({ required_error: 'Date is required' }),
-    content: z.string().optional(),
-    mediaUrl: z.string().optional(),
-  });
 
   const validatedFields = FormSchema.safeParse({
     title: formData.get('title'),
@@ -128,28 +163,71 @@ export async function createActivity(prevState: { message: string|null, errors: 
   }
 
   revalidatePath('/dashboard/activities');
+  redirect('/dashboard/activities');
   return { message: 'Activity created successfully.' };
+}
+
+export async function updateActivity(id: bigint, prevState: ActivityFormActionState, formData: FormData) {
+  const session = await auth();
+  if (session?.user?.id == null)
+    redirect('/login');
+
+  const validatedFields = FormSchema.safeParse({
+    title: formData.get('title'),
+    type: formData.get('type'),
+    date: formData.get('date'),
+    content: formData.get('content'),
+    mediaUrl: formData.get('mediaUrl'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Create Activity.',
+    };
+  }
+
+  const { title, type, date, content, mediaUrl } = validatedFields.data;
+
+  try {
+    await prisma.activity.update({
+      where: {
+        id: id,
+      },
+      data: {
+        title,
+        type,
+        date,
+        content,
+        mediaUrl,
+        userId: session.user.id,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return {
+      message: `Database Error: Failed to Update Activity. ${error}`
+    };
+  }
+
+  revalidatePath('/dashboard/activities');
+  redirect('/dashboard/activities');
 }
 
 export async function deleteActivity(id: bigint) {
   const session = await auth();
   if (session?.user?.id == null)
     redirect('/login');
-  const parsedId = z.number().safeParse(id);
-  if (!parsedId.success)
-    return { message: `Invalid id : ${id}` };
 
   try {
     await prisma.activity.delete({
       where: {
-        id: parsedId.data,
+        id: id,
+        userId: session.user.id,
       },
     });
-    return { message: 'Activity deleted successfully.' };
-  } catch (error){
+    revalidatePath('/dashboard/activities');
+  } catch (error) {
     console.error(error);
-    return {
-      message: `Database Error: Failed to Delete Activity. ${error}`,
-    };
   }
 }
