@@ -14,18 +14,14 @@ export const metadata: Metadata = {
 
 export default async function Page() {
 	return (
-		<div className="p-8">
-			<Card>
-				<CardHeader>
-					<CardTitle>Create Activity</CardTitle>
-					<CardDescription>
-						활동 입력
-					</CardDescription>
-				</CardHeader>
-				<CardContent>
-					<CreateActivityForm />
-				</CardContent>
-			</Card>
-		</div>
+		<Card>
+			<CardHeader>
+				<CardTitle>Create Activity</CardTitle>
+				<CardDescription>활동 입력</CardDescription>
+			</CardHeader>
+			<CardContent>
+				<CreateActivityForm />
+			</CardContent>
+		</Card>
 	);
 }

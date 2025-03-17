@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
-import { type VariantProps, cva } from "class-variance-authority";
+import { VariantProps, cva } from "class-variance-authority"
 import { PanelLeftIcon } from "lucide-react"
 
 import { useIsMobile } from "@/hooks/use-mobile"
@@ -33,16 +33,16 @@ const SIDEBAR_WIDTH_ICON = "3rem"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
 
 type SidebarContextProps = {
-	state: "expanded" | "collapsed";
-	open: boolean;
-	setOpen: (open: boolean) => void;
-	openMobile: boolean;
-	setOpenMobile: (open: boolean) => void;
-	isMobile: boolean;
-	toggleSidebar: () => void;
-};
+  state: "expanded" | "collapsed"
+  open: boolean
+  setOpen: (open: boolean) => void
+  openMobile: boolean
+  setOpenMobile: (open: boolean) => void
+  isMobile: boolean
+  toggleSidebar: () => void
+}
 
-const SidebarContext = React.createContext<SidebarContextProps | null>(null);
+const SidebarContext = React.createContext<SidebarContextProps | null>(null)
 
 function useSidebar() {
   const context = React.useContext(SidebarContext)
@@ -114,25 +114,17 @@ function SidebarProvider({
   const state = open ? "expanded" : "collapsed"
 
   const contextValue = React.useMemo<SidebarContextProps>(
-			() => ({
-				state,
-				open,
-				setOpen,
-				isMobile,
-				openMobile,
-				setOpenMobile,
-				toggleSidebar,
-			}),
-			[
-				state,
-				open,
-				setOpen,
-				isMobile,
-				openMobile,
-				setOpenMobile,
-				toggleSidebar,
-			],
-		)
+    () => ({
+      state,
+      open,
+      setOpen,
+      isMobile,
+      openMobile,
+      setOpenMobile,
+      toggleSidebar,
+    }),
+    [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
+  )
 
   return (
     <SidebarContext.Provider value={contextValue}>

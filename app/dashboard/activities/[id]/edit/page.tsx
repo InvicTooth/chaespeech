@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 export default async function Page(props: { params: Promise<{ id: string }> }) {
 	const params = await props.params;
-	const id = Number.parseInt(params.id, 10);
+	const id = Number.parseInt(params.id);
 	const activity = await prisma.activity.findUnique({
 		where: {
 			id: id,
@@ -28,16 +28,14 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
 	}
 
 	return (
-		<div className="p-8">
-			<Card>
-				<CardHeader>
-					<CardTitle>Edit Activity</CardTitle>
-					<CardDescription>활동 수정</CardDescription>
-				</CardHeader>
-				<CardContent>
-					<EditActivityForm activity={activity} />
-				</CardContent>
-			</Card>
-		</div>
+		<Card>
+			<CardHeader>
+				<CardTitle>Edit Activity</CardTitle>
+				<CardDescription>활동 수정</CardDescription>
+			</CardHeader>
+			<CardContent>
+				<EditActivityForm activity={activity} />
+			</CardContent>
+		</Card>
 	);
 }

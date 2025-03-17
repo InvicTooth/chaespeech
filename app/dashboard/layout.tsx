@@ -27,7 +27,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 						<BreadCrumbs />
 					</div>
 				</header>
-				{children}
+				<main className="p-8">{children}</main>
 			</SidebarInset>
 		</SidebarProvider>
 	);

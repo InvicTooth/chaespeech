@@ -27,7 +27,7 @@ export default async function Page(props: {
 
 
 	return (
-		<div className="w-full p-8">
+		<div className="w-full">
 			<div className="flex w-full items-center justify-between">
 				<h1 className={`${notoSansKR.className} text-2xl`}>활동</h1>
 			</div>

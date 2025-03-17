@@ -1,4 +1,5 @@
 import "@/app/globals.css"
+import "@/app/(landing)/landing.css";
 
 import type React from "react"
 import type { Metadata } from "next"
@@ -15,16 +16,15 @@ export const metadata:Metadata = {
 }
 
 export default function Layout({
-  children,
+	children,
 }: {
-  children: React.ReactNode
+	children: React.ReactNode;
 }) {
-  return (
-      <>
-        <Header />
-        {children}
-        <Footer />
-      </>
-		);
+	return (
+		<>
+			<Header />
+			{children}
+			<Footer />
+		</>
+	);
 }
-
