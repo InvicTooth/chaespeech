@@ -9,7 +9,6 @@ import {
 	Command,
 	// Frame,
 	GalleryVerticalEnd,
-	Sun,
 	// Map,
 	// PieChart,
 	// Settings2,
