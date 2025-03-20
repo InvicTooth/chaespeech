@@ -7,35 +7,13 @@ const lectures = [
 	{ title: "프레젠테이션", icon: "📈", desc: "상세3" },
 ];
 
-const containerVariants = {
-	hidden: { opacity: 0, y: 0 },
-	visible: {
-		opacity: 1,
-		y: 0,
-		transition: {
-			duration: 0.5,
-			ease: "easeInOut",
-			staggerChildren: 0.2, // Stagger the animation of each card
-		},
-	},
-};
-
-const itemVariants = {
-	hidden: { opacity: 0, x: -20 },
-	visible: {
-		opacity: 1,
-		x: 0,
-		transition: { duration: 0.5, ease: "easeInOut" },
-	},
-};
-
 export default function LecturesSection() {
 	return (
 		<motion.section
 			variants={containerVariants}
 			initial="hidden"
 			whileInView="visible"
-      viewport={{ once: true }}
+			viewport={{ once: true }}
 			className="mb-20"
 		>
 			<motion.h2
@@ -88,3 +66,25 @@ export default function LecturesSection() {
 		</motion.section>
 	);
 }
+
+const containerVariants = {
+	hidden: { opacity: 0, y: 0 },
+	visible: {
+		opacity: 1,
+		y: 0,
+		transition: {
+			duration: 0.5,
+			ease: "easeInOut",
+			staggerChildren: 0.2, // Stagger the animation of each card
+		},
+	},
+};
+
+const itemVariants = {
+	hidden: { opacity: 0, x: -20 },
+	visible: {
+		opacity: 1,
+		x: 0,
+		transition: { duration: 0.5, ease: "easeInOut" },
+	},
+};

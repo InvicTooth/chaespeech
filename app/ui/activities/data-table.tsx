@@ -71,6 +71,7 @@ import {
 } from "@/app/ui/activities/buttons";
 import Search from "./search";
 
+type UniqueIdentifier = string | number | bigint;
 export const schema = z.object({
 	id: z.bigint(),
 	userId: z.string(),
@@ -250,7 +251,6 @@ export function DataTable({
 		useSensor(KeyboardSensor, {}),
 	);
 
-	type UniqueIdentifier = string | number | bigint;
 	const dataIds = React.useMemo<UniqueIdentifier[]>(
 		() => data?.map(({ id }) => id) || [],
 		[data],

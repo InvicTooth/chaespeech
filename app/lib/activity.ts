@@ -29,6 +29,30 @@ export async function fetchLatestActivities() {
   return await fetchFilteredActivities({});
 }
 
+export async function fetchActivitiesForVisitors({
+  query = '',
+  page = 1,
+  take = 10,
+}) {
+  const session = await auth();
+  if (session?.user?.id == null)
+    redirect('/login');
+
+  const activities = await prisma.activity.findMany({
+    where: {
+      userId: session.user.id,
+      type: { contains: query },
+    },
+    orderBy: {
+      startAt: 'desc',
+    },
+    take: take,
+    skip: (page - 1) * take,
+  });
+
+  return activities;
+}
+
 export async function fetchFilteredActivities({
   query = "",
   page = 1,

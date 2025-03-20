@@ -62,3 +62,13 @@ export const generatePagination = (currentPage: number, totalPages: number) => {
     totalPages,
   ];
 };
+
+// 이미지 파일인지 확인하는 함수
+export function isImage(url: string): boolean {
+  return /\.(jpg|jpeg|png|webp|gif|svg)$/.test(url.toLowerCase());
+}
+
+// 비디오 파일인지 확인하는 함수
+export function isVideo(url: string): boolean {
+  return /\.(mp4|webm|ogg)$/.test(url.toLowerCase());
+}

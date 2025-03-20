@@ -1,4 +1,4 @@
-import type { Activity, User } from "@prisma/client"
+import type { Activity, User, Profile } from "@prisma/client"
 
 const activityTypes = [
   { value: "MainCareer", label: "메인 커리어" },
@@ -39,6 +39,11 @@ const colors = [
   "stone",
 ];
 
-export type { Activity, User };
-export { activityTypes, colors };
+const developerId = process.env.SITE_DEVELOPER_ID;
+const ownerId = process.env.SITE_OWNER_ID;
+
+
+
+export type { Activity, User, Profile };
+export { activityTypes, colors, ownerId, developerId };
 

@@ -12,8 +12,8 @@ import {
 import Link from "next/link";
 import {
 	signInWithGoogle,
-	signInWithNaver,
-	signInWithKakao,
+	// signInWithNaver,
+	// signInWithKakao,
 } from "@/app/lib/auth";
 import Image from "next/image";
 
@@ -44,7 +44,7 @@ export function LoginForm({
 								/>
 								Login with Google
 							</Button>
-							<Button
+							{/* <Button
 								variant="outline"
 								className="w-full"
 								onClick={signInWithNaver}
@@ -69,7 +69,7 @@ export function LoginForm({
 									alt="kakao"
 								/>
 								Login with Kakao
-							</Button>
+							</Button> */}
 						</div>
 					</div>
 				</CardContent>

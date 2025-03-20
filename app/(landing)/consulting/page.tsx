@@ -1,66 +1,18 @@
-import { consultings } from "@/app/mock/data";
 import Link from "next/link";
 import * as motion from "motion/react-client";
+import { fetchActivitiesForVisitors } from "@/app/lib/activity";
+import type { Activity } from "@/app/lib/definitions";
+import { format } from "date-fns";
+import { ko } from "date-fns/locale";
+import Image from "next/image";
+import { isImage, isVideo } from "@/app/lib/utils";
 
-const containerVariants = {
-	hidden: { opacity: 0 },
-	visible: {
-		opacity: 1,
-		transition: {
-			delayChildren: 0.3,
-			staggerChildren: 0.2,
-		},
-	},
-};
+export default async function Consulting() {
+	const consultings: Activity[] = await fetchActivitiesForVisitors({
+		query: "Consulting",
+		take: 100,
+	});
 
-const itemVariants = {
-	hidden: { opacity: 0, y: 20 },
-	visible: {
-		opacity: 1,
-		y: 0,
-		transition: {
-			duration: 0.5,
-		},
-	},
-};
-
-const heroVariants = {
-	hidden: { opacity: 0, y: -20 },
-	visible: {
-		opacity: 1,
-		y: 0,
-		transition: {
-			duration: 0.8,
-			ease: "easeInOut",
-		},
-	},
-};
-
-const processItemVariants = {
-	hidden: { opacity: 0, scale: 0.8 },
-	visible: {
-		opacity: 1,
-		scale: 1,
-		transition: {
-			duration: 0.6,
-			ease: "easeInOut",
-		},
-	},
-};
-
-const consultingItemVariants = {
-	hidden: { opacity: 0, x: -50 },
-	visible: {
-		opacity: 1,
-		x: 0,
-		transition: {
-			duration: 0.7,
-			ease: "easeInOut",
-		},
-	},
-};
-
-export default function Consulting() {
 	return (
 		<motion.div
 			className="min-h-screen bg-gray-50"
@@ -174,14 +126,14 @@ export default function Consulting() {
 						>
 							<h3 className="text-2xl font-bold mb-6">주요 컨설팅 실적</h3>
 							<motion.div
-								className="space-y-6"
+								className="space-y-6 h-96 overflow-y-auto"
 								variants={containerVariants}
 								initial="hidden"
 								animate="visible"
 							>
 								{consultings.map((consulting, index) => (
 									<motion.div
-										key={index}
+										key={consulting.id}
 										className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
 										variants={consultingItemVariants}
 									>
@@ -189,12 +141,48 @@ export default function Consulting() {
 											<span className="font-semibold">{index + 1}</span>
 										</div>
 										<div>
-											<p className="text-gray-900">{consulting}</p>
-											<div className="mt-2 flex gap-2">
-												<span className="px-2 py-1 bg-[var(--color-consulting-sky)]/10 text-[var(--color-consulting-sky)] rounded text-sm">
-													스피치 컨설팅
-												</span>
+											<p className="text-gray-900">{consulting.title}</p>
+											{consulting.content && (
+												<p className="mt-2 text-gray-600">
+													{consulting.content}
+												</p>
+											)}
+											<div className="mt-2 flex flex-wrap gap-2">
+												{consulting.startAt && consulting.endAt && (
+													<span className="px-2 py-1 text-sm bg-gray-100 text-gray-700 rounded">
+														{format(consulting.startAt, "yyyy.MM", {
+															locale: ko,
+														})}
+													</span>
+												)}
 											</div>
+											{consulting.mediaUrl && (
+												<div className="mt-3">
+													{isImage(consulting.mediaUrl) ? (
+														<Image
+															src={consulting.mediaUrl}
+															alt="컨설팅 관련 이미지"
+															className="w-full h-48 object-cover rounded-md"
+														/>
+													) : isVideo(consulting.mediaUrl) ? (
+														<video
+															muted
+															src={consulting.mediaUrl}
+															controls
+															className="w-full h-48 object-cover rounded-md"
+														/>
+													) : (
+														<Link
+															href={consulting.mediaUrl}
+															target="_blank"
+															rel="noopener noreferrer"
+															className="text-blue-500 hover:underline"
+														>
+															관련 자료 보기
+														</Link>
+													)}
+												</div>
+											)}
 										</div>
 									</motion.div>
 								))}
@@ -257,3 +245,61 @@ export default function Consulting() {
 		</motion.div>
 	);
 }
+
+const containerVariants = {
+	hidden: { opacity: 0 },
+	visible: {
+		opacity: 1,
+		transition: {
+			delayChildren: 0.3,
+			staggerChildren: 0.2,
+		},
+	},
+};
+
+const itemVariants = {
+	hidden: { opacity: 0, y: 20 },
+	visible: {
+		opacity: 1,
+		y: 0,
+		transition: {
+			duration: 0.5,
+		},
+	},
+};
+
+const heroVariants = {
+	hidden: { opacity: 0, y: -20 },
+	visible: {
+		opacity: 1,
+		y: 0,
+		transition: {
+			duration: 0.8,
+			ease: "easeInOut",
+		},
+	},
+};
+
+const processItemVariants = {
+	hidden: { opacity: 0, scale: 0.8 },
+	visible: {
+		opacity: 1,
+		scale: 1,
+		transition: {
+			duration: 0.6,
+			ease: "easeInOut",
+		},
+	},
+};
+
+const consultingItemVariants = {
+	hidden: { opacity: 0, x: -50 },
+	visible: {
+		opacity: 1,
+		x: 0,
+		transition: {
+			duration: 0.7,
+			ease: "easeInOut",
+		},
+	},
+};

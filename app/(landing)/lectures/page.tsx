@@ -1,65 +1,17 @@
-import { lectures } from "@/app/mock/data";
-import * as motion from 'motion/react-client';
+import { fetchActivitiesForVisitors } from "@/app/lib/activity";
+import * as motion from "motion/react-client";
+import { format } from "date-fns";
+import { ko } from "date-fns/locale";
+import { isImage, isVideo } from "@/app/lib/utils";
+import Image from "next/image";
+import Link from "next/link";
 
-const containerVariants = {
-	hidden: { opacity: 0 },
-	visible: {
-		opacity: 1,
-		transition: {
-			delayChildren: 0.3,
-			staggerChildren: 0.2,
-		},
-	},
-};
+export default async function Lectures() {
+	const lectures = await fetchActivitiesForVisitors({
+		query: "Lecture",
+		take: 100,
+	});
 
-const itemVariants = {
-	hidden: { opacity: 0, y: 20 },
-	visible: {
-		opacity: 1,
-		y: 0,
-		transition: {
-			duration: 0.5,
-		},
-	},
-};
-
-const heroVariants = {
-	hidden: { opacity: 0, y: -20 },
-	visible: {
-		opacity: 1,
-		y: 0,
-		transition: {
-			duration: 0.8,
-			ease: "easeInOut",
-		},
-	},
-};
-
-const programCardVariants = {
-	hidden: { opacity: 0, scale: 0.8 },
-	visible: {
-		opacity: 1,
-		scale: 1,
-		transition: {
-			duration: 0.6,
-			ease: "easeInOut",
-		},
-	},
-};
-
-const lectureItemVariants = {
-	hidden: { opacity: 0, x: -50 },
-	visible: {
-		opacity: 1,
-		x: 0,
-		transition: {
-			duration: 0.7,
-			ease: "easeInOut",
-		},
-	},
-};
-
-export default function Lectures() {
 	return (
 		<motion.div
 			className="min-h-screen bg-gray-50"
@@ -152,7 +104,7 @@ export default function Lectures() {
 					>
 						{lectures.map((lecture, index) => (
 							<motion.div
-								key={index}
+								key={lecture.id}
 								className="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow duration-300"
 								variants={lectureItemVariants}
 							>
@@ -161,19 +113,60 @@ export default function Lectures() {
 										{index + 1}
 									</div>
 									<div>
-										<p className="text-lg">{lecture}</p>
+										<p className="text-lg">{lecture.title}</p>
+										{lecture.content && (
+											<p className="mt-2 text-gray-600">{lecture.content}</p>
+										)}
 										<div className="mt-2 flex flex-wrap gap-2">
-											{lecture.includes("스피치") && (
+											{lecture.startAt && lecture.endAt && (
+												<span className="px-2 py-1 text-sm bg-gray-100 text-gray-700 rounded">
+													{format(lecture.startAt, "yyyy.MM", { locale: ko })}
+												</span>
+											)}
+											{/* {lecture.title.includes("스피치") && (
 												<span className="px-2 py-1 bg-[var(--color-lecture-pink)]/10 text-[var(--color-lecture-pink)] rounded-full text-sm">
 													스피치
 												</span>
 											)}
-											{lecture.includes("커뮤니케이션") && (
+											{lecture.title.includes("커뮤니케이션") && (
 												<span className="px-2 py-1 bg-[var(--color-lecture-blue)]/10 text-[var(--color-lecture-blue)] rounded-full text-sm">
 													커뮤니케이션
 												</span>
 											)}
+											{lecture.title.includes("프레젠테이션") && (
+												<span className="px-2 py-1 bg-[var(--color-lecture-blue)]/10 text-[var(--color-lecture-blue)] rounded-full text-sm">
+													프레젠테이션
+												</span>
+											)} */}
 										</div>
+										{lecture.mediaUrl && (
+											<div className="mt-3">
+												{/* 이미지 또는 동영상 여부 판단 */}
+												{isImage(lecture.mediaUrl) ? (
+													<Image
+														src={lecture.mediaUrl}
+														alt="강의 관련 이미지"
+														className="w-full h-48 object-cover rounded-md"
+													/>
+												) : isVideo(lecture.mediaUrl) ? (
+													<video
+														muted
+														src={lecture.mediaUrl}
+														controls
+														className="w-full h-48 object-cover rounded-md"
+													/>
+												) : (
+													<Link
+														href={lecture.mediaUrl}
+														target="_blank"
+														rel="noopener noreferrer"
+														className="text-blue-500 hover:underline"
+													>
+														관련 자료 보기
+													</Link>
+												)}
+											</div>
+										)}
 									</div>
 								</div>
 							</motion.div>
@@ -184,3 +177,61 @@ export default function Lectures() {
 		</motion.div>
 	);
 }
+
+const containerVariants = {
+	hidden: { opacity: 0 },
+	visible: {
+		opacity: 1,
+		transition: {
+			delayChildren: 0.3,
+			staggerChildren: 0.2,
+		},
+	},
+};
+
+const itemVariants = {
+	hidden: { opacity: 0, y: 20 },
+	visible: {
+		opacity: 1,
+		y: 0,
+		transition: {
+			duration: 0.5,
+		},
+	},
+};
+
+const heroVariants = {
+	hidden: { opacity: 0, y: -20 },
+	visible: {
+		opacity: 1,
+		y: 0,
+		transition: {
+			duration: 0.8,
+			ease: "easeInOut",
+		},
+	},
+};
+
+const programCardVariants = {
+	hidden: { opacity: 0, scale: 0.8 },
+	visible: {
+		opacity: 1,
+		scale: 1,
+		transition: {
+			duration: 0.6,
+			ease: "easeInOut",
+		},
+	},
+};
+
+const lectureItemVariants = {
+	hidden: { opacity: 0, x: -50 },
+	visible: {
+		opacity: 1,
+		x: 0,
+		transition: {
+			duration: 0.7,
+			ease: "easeInOut",
+		},
+	},
+};

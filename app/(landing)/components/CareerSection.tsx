@@ -1,8 +1,13 @@
 import Link from "next/link";
-import { mainCareer, etcCareer } from "@/app/mock/data";
 import * as motion from "motion/react-client";
+import { fetchActivitiesForVisitors } from "@/app/lib/activity";
+import type { Activity } from "@/app/lib/definitions";
 
-const CareerSection = () => {
+const CareerSection = async () => {
+	const careers = await fetchActivitiesForVisitors({ query: "Career" });
+	const mainCareer = careers.filter((career) => career.type === "MainCareer");
+	const subCareer = careers.filter((career) => career.type === "SubCareer");
+
 	return (
 		<motion.section
 			initial="hidden"
@@ -26,16 +31,16 @@ const CareerSection = () => {
 				<motion.div className="bg-card rounded-xl shadow-lg p-8 border-t-4 border-[var(--color-career-gold)] hover:shadow-xl ease-in-out hover:-translate-y-1 transition-transform duration-200">
 					<motion.h3 className="text-2xl font-bold mb-6">주요 경력</motion.h3>
 					<ul className="space-y-4">
-						{mainCareer.slice(0, 3).map((career, index) => (
-							<CareerItem key={index} career={career} />
+						{mainCareer.slice(0, 3).map((career) => (
+							<CareerItem key={career.id} career={career} />
 						))}
 					</ul>
 				</motion.div>
 				<motion.div className="bg-card rounded-xl shadow-lg p-8 border-t-4 border-[var(--color-career-gold)] hover:shadow-xl ease-in-out hover:-translate-y-1 transition-transform duration-200">
 					<motion.h3 className="text-2xl font-bold mb-6">기타 경력</motion.h3>
 					<ul className="space-y-4">
-						{etcCareer.slice(0, 3).map((career, index) => (
-							<CareerItem key={index} career={career} />
+						{subCareer.slice(0, 3).map((career) => (
+							<CareerItem key={career.id} career={career} />
 						))}
 					</ul>
 				</motion.div>
@@ -54,14 +59,14 @@ const CareerSection = () => {
 
 export default CareerSection;
 
-const CareerItem = ({ career }: { career: string }) => (
+const CareerItem = ({ career }: { career: Activity }) => (
 	<motion.li
 		initial={{ opacity: 0, x: -20 }}
 		animate={{ opacity: 1, x: 0 }}
 		transition={{ duration: 0.5, ease: "easeInOut" }}
 		className="flex items-center gap-3 text-muted-foreground"
 	>
-		<span className="w-2 h-2 rounded-full bg-[var(--color-career-gold)]"/>{" "}
-		<span>{career}</span>
+		<span className="w-2 h-2 rounded-full bg-[var(--color-career-gold)]" />{" "}
+		<span>{career.title}</span>
 	</motion.li>
 );
