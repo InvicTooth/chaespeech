@@ -12,7 +12,7 @@ import {
 import { Fragment } from "react";
 
 // 특정 페이지에서 Breadcrumb을 숨길 수 있도록 설정
-const EXCLUDED_PAGES = ["/", "/login", "/dashboard", "/404"];
+const EXCLUDED_PAGES = ["/", "/login", "/404"];
 
 const BreadCrumbs = () => {
 	const paths = usePathname(); // 현재 경로 가져오기

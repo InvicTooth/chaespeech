@@ -21,10 +21,10 @@ export const generateYAxis = (list: { yearMonth: string; count: bigint }[]) => {
   // based on highest record and in 1000s
   const yAxisLabels = [];
   const highestRecord = Math.max(...list.map((data) => Number(data.count)));
-  const topLabel = Math.ceil(highestRecord / 1000) * 1000;
+  const topLabel = Math.ceil(highestRecord / 10) * 10;
 
-  for (let i = topLabel; i >= 0; i -= 1000) {
-    yAxisLabels.push(`$${i / 1000}K`);
+  for (let i = topLabel; i >= 0; i -= topLabel / 10) {
+    yAxisLabels.push(`${i}`);
   }
 
   return { yAxisLabels, topLabel };

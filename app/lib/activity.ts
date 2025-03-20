@@ -26,10 +26,14 @@ export async function fetchActivitiesByType() {
 }
 
 export async function fetchLatestActivities() {
-  return await fetchFilteredActivities("", 1, 10);
+  return await fetchFilteredActivities({});
 }
 
-export async function fetchFilteredActivities(query = '', page = 1, take = 10) {
+export async function fetchFilteredActivities({
+  query = "",
+  page = 1,
+  take = 10,
+}) {
   const session = await auth();
   if (session?.user?.id == null)
     redirect('/login');
@@ -44,7 +48,7 @@ export async function fetchFilteredActivities(query = '', page = 1, take = 10) {
       ]
     },
     orderBy: {
-      date: 'desc',
+      startAt: 'desc',
     },
     take: take,
     skip: (page - 1) * take,
@@ -53,7 +57,7 @@ export async function fetchFilteredActivities(query = '', page = 1, take = 10) {
   return activities;
 }
 
-export async function fetchFilteredActivitiesCount(query: string) {
+export async function fetchFilteredActivitiesCount(query = "") {
   const session = await auth();
   if (session?.user?.id == null)
     redirect('/login');
@@ -82,13 +86,13 @@ export async function fetchActivitiesGroupByMonth() {
       { yearMonth: string; count: bigint }[]
     >`
       SELECT
-        to_char(date, 'YYYY-MM') AS "yearMonth",
+        to_char("startAt", 'YYYY-MM') AS "yearMonth",
         COUNT(*) AS count
       FROM
         "Activity"
       WHERE
         "userId" = ${session.user.id}
-        AND date >= CURRENT_DATE - INTERVAL '1 year'
+        AND "startAt" >= CURRENT_DATE - INTERVAL '1 year'
       GROUP BY
         "yearMonth"
       ORDER BY
@@ -103,12 +107,44 @@ export async function fetchActivitiesGroupByMonth() {
   }
 }
 
+export async function fetchActivitiesByDayAndType() {
+  const session = await auth();
+  if (session?.user?.id == null)
+    redirect('/login');
+
+  try {
+    const activitiesByDayAndType = await prisma.$queryRaw<
+      { date: string; type: string; count: bigint }[]
+    >`
+      SELECT
+        to_char("startAt", 'YYYY-MM-DD') AS date,
+        "type",
+        COUNT(*) AS count
+      FROM
+        "Activity"
+      WHERE
+        "userId" = ${session.user.id}
+        AND "startAt" >= CURRENT_DATE - INTERVAL '1 year'
+      GROUP BY
+        date, "type"
+      ORDER BY
+        date ASC, "type" ASC;
+    `;
+
+    return activitiesByDayAndType;
+  } catch (error) {
+    console.error('Database Error:', error);
+    return [];
+  }
+}
+
 export type ActivityFormActionState = {
   message?: string | null,
   errors?: {
     title?: string[];
     type?: string[];
-    date?: string[];
+    startAt?: string[];
+    endAt?: string[];
     content?: string[];
     mediaUrl?: string[];
   }
@@ -117,7 +153,8 @@ export type ActivityFormActionState = {
 const FormSchema = z.object({
   title: z.string({ required_error: 'Title is required' }).min(1, { message: 'Title is required' }),
   type: z.string({ required_error: 'Type is required' }).min(1, { message: 'Type is required' }),
-  date: z.coerce.date({ required_error: 'Date is required' }),
+  startAt: z.coerce.date({ required_error: 'Start Date is required' }),
+  endAt: z.coerce.date({ required_error: 'End Date is required' }),
   content: z.string().optional(),
   mediaUrl: z.string().optional(),
 });
@@ -130,7 +167,8 @@ export async function createActivity(prevState: ActivityFormActionState, formDat
   const validatedFields = FormSchema.safeParse({
     title: formData.get('title'),
     type: formData.get('type'),
-    date: formData.get('date'),
+    startAt: formData.get('startAt'),
+    endAt: formData.get('endAt'),
     content: formData.get('content'),
     mediaUrl: formData.get('mediaUrl'),
   });
@@ -142,14 +180,15 @@ export async function createActivity(prevState: ActivityFormActionState, formDat
     };
   }
 
-  const { title, type, date, content, mediaUrl } = validatedFields.data;
+  const { title, type, startAt, endAt, content, mediaUrl } = validatedFields.data;
 
   try {
     await prisma.activity.create({
       data: {
         title,
         type,
-        date,
+        startAt,
+        endAt,
         content,
         mediaUrl,
         userId: session.user.id,
@@ -175,7 +214,8 @@ export async function updateActivity(id: bigint, prevState: ActivityFormActionSt
   const validatedFields = FormSchema.safeParse({
     title: formData.get('title'),
     type: formData.get('type'),
-    date: formData.get('date'),
+    startAt: formData.get('startAt'),
+    endAt: formData.get('endAt'),
     content: formData.get('content'),
     mediaUrl: formData.get('mediaUrl'),
   });
@@ -187,7 +227,7 @@ export async function updateActivity(id: bigint, prevState: ActivityFormActionSt
     };
   }
 
-  const { title, type, date, content, mediaUrl } = validatedFields.data;
+  const { title, type, startAt, endAt, content, mediaUrl } = validatedFields.data;
 
   try {
     await prisma.activity.update({
@@ -197,7 +237,8 @@ export async function updateActivity(id: bigint, prevState: ActivityFormActionSt
       data: {
         title,
         type,
-        date,
+        startAt,
+        endAt,
         content,
         mediaUrl,
         userId: session.user.id,
@@ -227,6 +268,7 @@ export async function deleteActivity(id: bigint) {
       },
     });
     revalidatePath('/dashboard/activities');
+    revalidatePath('/dashboard');
   } catch (error) {
     console.error(error);
   }

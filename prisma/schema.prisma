@@ -73,12 +73,13 @@ model Authenticator {
 
 model Activity {
   id        BigInt   @id @default(autoincrement())
-  date      DateTime @default(now()) @db.Timestamptz(6)
+  startAt   DateTime @default(now()) @db.Timestamptz(6)
   type      String
   title     String
   userId    String
   content   String   @default("")
   mediaUrl  String   @default("")
   isDeleted Boolean  @default(false)
+  endAt     DateTime @default(now()) @db.Timestamptz(6)
   User      User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }

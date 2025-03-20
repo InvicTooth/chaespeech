@@ -1,15 +1,17 @@
-import Link from 'next/link';
+import Link from "next/link";
 import { deleteActivity } from "@/app/lib/activity";
-import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import React from "react";
 
 export function CreateActivity() {
 	return (
-		<Link
-			href="/dashboard/activities/create"
-			className="flex h-10 items-center rounded-lg bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-500 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-		>
-			<span className="hidden md:block">활동 입력하기</span>{" "}
-			<Plus className="h-5 md:ml-4" />
+		<Link href="/dashboard/activities/create">
+			<Button className="gap-2">
+				활동 입력하기
+				<Plus className="h-4 w-4" />
+			</Button>
 		</Link>
 	);
 }
@@ -18,7 +20,10 @@ export function UpdateActivity({ id }: { id: bigint }) {
 	return (
 		<Link
 			href={`/dashboard/activities/${id}/edit`}
-			className="rounded-md border p-2 hover:bg-gray-100"
+			className={cn(
+				Button({ variant: "ghost" }),
+				"rounded-md p-2 hover:bg-gray-100",
+			)}
 		>
 			<Pencil className="w-5" />
 		</Link>
@@ -26,16 +31,18 @@ export function UpdateActivity({ id }: { id: bigint }) {
 }
 
 export function DeleteActivity({ id }: { id: bigint }) {
-  const deleteActivityById = deleteActivity.bind(null, id);
-  return (
-			<form action={deleteActivityById}>
-				<button
-					type="submit"
-					className="rounded-md border p-2 hover:bg-gray-100"
-				>
-					<span className="sr-only">Delete</span>
-					<Trash2 className="w-5" />
-				</button>
-			</form>
-		);
+	const deleteActivityById = deleteActivity.bind(null, id);
+
+	return (
+		<form action={deleteActivityById}>
+			<Button
+				type="submit"
+				variant="ghost"
+				className="rounded-md p-2 hover:bg-gray-100"
+			>
+				<span className="sr-only">Delete</span>
+				<Trash2 className="w-5" />
+			</Button>
+		</form>
+	);
 }

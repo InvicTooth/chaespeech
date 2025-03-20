@@ -1,33 +1,26 @@
-import CardWrapper from "@/app/ui/dashboard/cards";
-import ActivityChart from "@/app/ui/dashboard/activity-chart";
-import LatestActivities from "@/app/ui/dashboard/latest-activities";
-import { notoSansKR } from "@/app/ui/fonts";
-import { Suspense } from "react";
+import { ChartAreaInteractive } from "@/app/ui/dashboard/chart-area-interactive";
+import { DataTable } from "@/app/ui/activities/data-table";
+import { SectionCards } from "@/app/ui/dashboard/section-cards";
 import {
-	RevenueChartSkeleton,
-	LatestInvoicesSkeleton,
-	CardsSkeleton,
-} from "@/app/ui/skeletons";
+	fetchActivitiesByDayAndType,
+	fetchLatestActivities,
+} from "@/app/lib/activity";
 
 export default async function Page() {
+	const activitiesByDayAndType = (await fetchActivitiesByDayAndType()) ?? [];
+	const latestActivities = (await fetchLatestActivities()) ?? [];
+
 	return (
-		<>
-			<h1 className={`${notoSansKR.className} mb-4 text-xl md:text-2xl`}>
-				Dashboard
-			</h1>
-			<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-				<Suspense fallback={<CardsSkeleton />}>
-					<CardWrapper />
-				</Suspense>
+		<div className="flex flex-1 flex-col">
+			<div className="@container/main flex flex-1 flex-col gap-2">
+				<div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+					<SectionCards />
+					<div className="px-4 lg:px-6">
+						<ChartAreaInteractive activities={activitiesByDayAndType} />
+					</div>
+					<DataTable data={latestActivities} />
+				</div>
 			</div>
-			<div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-4 lg:grid-cols-8">
-				<Suspense fallback={<RevenueChartSkeleton />}>
-					<ActivityChart />
-				</Suspense>
-				<Suspense fallback={<LatestInvoicesSkeleton />}>
-					<LatestActivities />
-				</Suspense>
-			</div>
-		</>
+		</div>
 	);
 }

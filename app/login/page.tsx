@@ -1,4 +1,4 @@
-import { LoginForm } from "@/components/login-form";
+import { LoginForm } from "@/app/ui/login-form";
 import Link from "next/link";
 import { MessageCircleMore } from "lucide-react";
 

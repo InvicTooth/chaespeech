@@ -57,8 +57,10 @@ export const ThemeChanger = () => {
 								<SidebarMenuSub>
 									{themes.map((theme) => (
 										<SidebarMenuSubItem key={theme}>
-											<div  className="flex items-center justify-between">
-												<SidebarMenuButton className="capitalize">{theme}</SidebarMenuButton>
+											<div className="flex items-center justify-between">
+												<SidebarMenuButton className="capitalize">
+													{theme}
+												</SidebarMenuButton>
 												<div className="flex items-center space-x-2">
 													<Button
 														variant="outline"
