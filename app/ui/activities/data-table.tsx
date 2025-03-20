@@ -6,6 +6,7 @@ import {
 	KeyboardSensor,
 	MouseSensor,
 	TouchSensor,
+	type UniqueIdentifier,
 	closestCenter,
 	useSensor,
 	useSensors,
@@ -71,7 +72,6 @@ import {
 } from "@/app/ui/activities/buttons";
 import Search from "./search";
 
-type UniqueIdentifier = string | number | bigint;
 export const schema = z.object({
 	id: z.bigint(),
 	userId: z.string(),
@@ -86,7 +86,7 @@ export const schema = z.object({
 
 function DragHandle({ id }: { id: bigint }) {
 	const { attributes, listeners } = useSortable({
-		id,
+		id: Number(id),
 	});
 
 	return (
@@ -201,7 +201,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
 
 function DraggableRow({ row }: { row: Row<z.infer<typeof schema>> }) {
 	const { transform, transition, setNodeRef, isDragging } = useSortable({
-		id: row.original.id,
+		id: String(row.original.id),
 	});
 
 	return (
@@ -252,7 +252,7 @@ export function DataTable({
 	);
 
 	const dataIds = React.useMemo<UniqueIdentifier[]>(
-		() => data?.map(({ id }) => id) || [],
+		() => data?.map(({ id }) => String(id)) || [],
 		[data],
 	);
 
