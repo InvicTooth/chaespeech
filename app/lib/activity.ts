@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { prisma } from '@/prisma/client';
 import { z } from 'zod';
 import { auth } from '@/auth';
+import { ownerId } from './definitions';
 
 export async function fetchActivitiesByType() {
   const session = await auth();
@@ -34,13 +35,9 @@ export async function fetchActivitiesForVisitors({
   page = 1,
   take = 10,
 }) {
-  const session = await auth();
-  if (session?.user?.id == null)
-    redirect('/login');
-
   const activities = await prisma.activity.findMany({
     where: {
-      userId: session.user.id,
+      userId: ownerId,
       type: { contains: query },
     },
     orderBy: {
