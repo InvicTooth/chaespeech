@@ -42,7 +42,7 @@ const EventsSection = async () => {
 				variants={containerVariants}
 				className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
 			>
-				{groupedEventsArray.map((group, index) => {
+				{groupedEventsArray.map((group) => {
 					const typeLabel =
 						activityTypes.find((type) => type.value === group.type)?.label ||
 						group.type;
@@ -60,7 +60,7 @@ const EventsSection = async () => {
 								{typeLabel}
 							</motion.h3>
 							<motion.ul variants={itemVariants} className="space-y-2">
-								{group.events.slice(0, 3).map((event, eventIndex) => (
+								{group.events.slice(0, 3).map((event) => (
 									<motion.li
 										variants={itemVariants}
 										key={event.id}
