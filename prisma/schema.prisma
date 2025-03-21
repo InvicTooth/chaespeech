@@ -47,6 +47,7 @@ model Session {
   expires      DateTime
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  id           BigInt   @id @default(autoincrement())
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
@@ -86,16 +87,16 @@ model Activity {
 }
 
 model Profile {
-  id                         BigInt  @id @default(autoincrement())
+  id                         BigInt @id @default(autoincrement())
   userId                     String
-  name                       String? @db.VarChar(20)
-  brand                      String? @db.VarChar(255)
-  phone                      String? @db.VarChar(20)
-  email                      String? @db.VarChar(255)
-  businessRegistrationNumber String? @db.VarChar(20)
-  address                    String? @db.VarChar(255)
-  bank                       String? @db.VarChar(20)
-  accountNumber              String? @db.VarChar(20)
-  depositor                  String? @db.VarChar(20)
-  User                       User    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  name                       String @default("")
+  brand                      String @default("")
+  phone                      String @default("")
+  email                      String @default("")
+  businessRegistrationNumber String @default("")
+  address                    String @default("")
+  bank                       String @default("")
+  accountNumber              String @default("")
+  depositor                  String @default("")
+  User                       User   @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }

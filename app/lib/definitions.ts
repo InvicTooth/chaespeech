@@ -1,6 +1,9 @@
 import type { Activity, User, Profile } from "@prisma/client"
+import { z } from "zod";
 
-const activityTypes = [
+export type { Activity, User, Profile };
+
+export const activityTypes = [
   { value: "MainCareer", label: "메인 커리어" },
   { value: "SubCareer", label: "서브 커리어" },
   { value: "Lecture", label: "강의" },
@@ -14,7 +17,7 @@ const activityTypes = [
   { value: "PromotionEvent", label: "홍보영상(정부, 관공서, 기업) MC" },
 ];
 
-const colors = [
+export const colors = [
   "red",
   "orange",
   "amber",
@@ -39,11 +42,46 @@ const colors = [
   "stone",
 ];
 
-const developerId = process.env.SITE_DEVELOPER_ID;
-const ownerId = process.env.SITE_OWNER_ID;
+export const developerId = process.env.SITE_DEVELOPER_ID;
+export const ownerId = process.env.SITE_OWNER_ID;
 
+export type ActionState = {
+  message: string | null,
+  errors?: {
+    [key: string]: string[]
+  }
+};
 
+export const activityFormSchema = z.object({
+  title: z.string().min(2, {
+    message: "제목은 최소 2글자 이상이어야 합니다.",
+  }),
+  type: z.string(),
+  content: z.string().optional(),
+  mediaUrl: z.string().optional(),
+  date: z
+    .object(
+      {
+        from: z.date(),
+        to: z.date().optional(),
+      },
+      { required_error: "Date is required." },
+    )
+    .refine((date) => {
+      return !!date.to;
+    }, "End Date is required."),
+});
 
-export type { Activity, User, Profile };
-export { activityTypes, colors, ownerId, developerId };
-
+export const profileFormSchema = z.object({
+  id: z.coerce.bigint(),
+  userId: z.string(),
+  name: z.string(),
+  brand: z.string(),
+  phone: z.string(),
+  email: z.string().email(),
+  businessRegistrationNumber: z.string(),
+  address: z.string(),
+  bank: z.string(),
+  accountNumber: z.string(),
+  depositor: z.string(),
+});

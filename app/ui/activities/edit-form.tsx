@@ -1,15 +1,12 @@
 "use client";
 
-import { startTransition, useActionState, useEffect, useRef } from "react";
+import { startTransition, useActionState, useRef } from "react";
 import { Type } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
-import {
-	updateActivity,
-	type ActivityFormActionState,
-} from "@/app/lib/activity";
+import { updateActivity } from "@/app/lib/activity";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { ko } from "date-fns/locale";
@@ -32,45 +29,25 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { z } from "zod";
+import type { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { activityTypes, type Activity } from "@/app/lib/definitions";
+import {
+	type ActionState,
+	type Activity,
+	activityTypes,
+	activityFormSchema,
+} from "@/app/lib/definitions";
 
-const formSchema = z.object({
-	title: z.string().min(2, {
-		message: "제목은 최소 2글자 이상이어야 합니다.",
-	}),
-	type: z.string(),
-	content: z.string().optional(),
-	mediaUrl: z.string().optional(),
-	date: z
-		.object(
-			{
-				from: z.date(),
-				to: z.date().optional(),
-			},
-			{ required_error: "Date is required." },
-		)
-		.refine((date) => {
-			return !!date.to;
-		}, "End Date is required."),
-});
-
-interface EditActivityFormProps {
-	activity: Activity;
-}
-
-export default function EditActivityForm({ activity }: EditActivityFormProps) {
+export default function EditActivityForm({ activity }: { activity: Activity }) {
 	const updateActivityWithId = updateActivity.bind(null, activity.id);
-	const initialState: ActivityFormActionState = { message: null, errors: {} };
-	const [state, formAction] = useActionState(
-		updateActivityWithId,
-		initialState,
-	);
+	const [state, formAction] = useActionState(updateActivityWithId, {
+		message: null,
+		errors: {},
+	} as ActionState);
 	const formRef = useRef<HTMLFormElement>(null);
 
-	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema),
+	const form = useForm<z.infer<typeof activityFormSchema>>({
+		resolver: zodResolver(activityFormSchema),
 		defaultValues: {
 			title: activity.title,
 			type: activity.type,
@@ -83,13 +60,7 @@ export default function EditActivityForm({ activity }: EditActivityFormProps) {
 		},
 	});
 
-	useEffect(() => {
-		if (form.formState.isSubmitSuccessful && state.message === "success") {
-			// form.reset(); // 수정 후 폼 초기화는 필요에 따라 주석 해제
-		}
-	}, [form.formState.isSubmitSuccessful, state.message]);
-
-	const onSubmit = (values: z.infer<typeof formSchema>) => {
+	const onSubmit = (values: z.infer<typeof activityFormSchema>) => {
 		const formData = new FormData();
 		for (const [key, value] of Object.entries(values)) {
 			if (typeof value === "string") {

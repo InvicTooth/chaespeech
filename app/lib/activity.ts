@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { prisma } from '@/prisma/client';
 import { z } from 'zod';
 import { auth } from '@/auth';
-import { ownerId } from './definitions';
+import { type ActionState, ownerId } from '@/app/lib/definitions';
 
 export async function fetchActivitiesByType() {
   const session = await auth();
@@ -159,18 +159,6 @@ export async function fetchActivitiesByDayAndType() {
   }
 }
 
-export type ActivityFormActionState = {
-  message?: string | null,
-  errors?: {
-    title?: string[];
-    type?: string[];
-    startAt?: string[];
-    endAt?: string[];
-    content?: string[];
-    mediaUrl?: string[];
-  }
-};
-
 const FormSchema = z.object({
   title: z.string({ required_error: 'Title is required' }).min(1, { message: 'Title is required' }),
   type: z.string({ required_error: 'Type is required' }).min(1, { message: 'Type is required' }),
@@ -180,7 +168,7 @@ const FormSchema = z.object({
   mediaUrl: z.string().optional(),
 });
 
-export async function createActivity(prevState: ActivityFormActionState, formData: FormData) {
+export async function createActivity(prevState: ActionState, formData: FormData) {
   const session = await auth();
   if (session?.user?.id == null)
     redirect('/login');
@@ -227,7 +215,7 @@ export async function createActivity(prevState: ActivityFormActionState, formDat
   return { message: 'Activity created successfully.' };
 }
 
-export async function updateActivity(id: bigint, prevState: ActivityFormActionState, formData: FormData) {
+export async function updateActivity(id: bigint, prevState: ActionState, formData: FormData) {
   const session = await auth();
   if (session?.user?.id == null)
     redirect('/login');

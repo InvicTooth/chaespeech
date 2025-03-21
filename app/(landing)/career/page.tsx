@@ -54,7 +54,7 @@ const Career = async () => {
 						>
 							<div className="bg-white rounded-xl shadow-lg p-8 sticky top-8">
 								<h2 className="text-2xl font-bold mb-6 text-[var(--color-career-navy)]">
-									Current Position
+									현재 활동 분야
 								</h2>
 								<div className="space-y-4">
 									{currentCareer.map((career) => (

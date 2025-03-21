@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/sidebar";
 import { ThemeChanger } from "@/app/ui/layout/nav-theme-changer";
 import Link from "next/link";
-import { ActivityIcon } from "lucide-react";
+import { ActivityIcon, UserPen } from "lucide-react";
 
 const data = {
 	user: {
@@ -32,6 +32,11 @@ const data = {
 			title: "Dashboard",
 			url: "/dashboard",
 			icon: IconDashboard,
+		},
+		{
+			title: "Profile",
+			url: "/dashboard/profile",
+			icon: UserPen,
 		},
 		{
 			title: "Activities",
