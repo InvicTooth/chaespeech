@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useActionState, useRef } from "react";
+import { startTransition, useActionState } from "react";
 import { Type } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,7 +32,6 @@ import { cn } from "@/lib/utils";
 import type { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-	type ActionState,
 	type Activity,
 	activityTypes,
 	activityFormSchema,
@@ -43,8 +42,7 @@ export default function EditActivityForm({ activity }: { activity: Activity }) {
 	const [state, formAction] = useActionState(updateActivityWithId, {
 		message: null,
 		errors: {},
-	} as ActionState);
-	const formRef = useRef<HTMLFormElement>(null);
+	});
 
 	const form = useForm<z.infer<typeof activityFormSchema>>({
 		resolver: zodResolver(activityFormSchema),
@@ -89,7 +87,6 @@ export default function EditActivityForm({ activity }: { activity: Activity }) {
 			<CardContent>
 				<Form {...form}>
 					<form
-						ref={formRef}
 						action={formAction}
 						onSubmit={(evt) => {
 							evt.preventDefault();

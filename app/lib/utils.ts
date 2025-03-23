@@ -72,3 +72,34 @@ export function isImage(url: string): boolean {
 export function isVideo(url: string): boolean {
   return /\.(mp4|webm|ogg)$/.test(url.toLowerCase());
 }
+
+// /app/lib/utils.ts
+export function formatBusinessRegistrationNumber(
+  businessRegistrationNumber: string | null | undefined,
+): string {
+  if (!businessRegistrationNumber)
+    return "";
+
+  const cleanedNumber = businessRegistrationNumber.replace(/\D/g, "");
+  if (cleanedNumber.length !== 10) {
+    return businessRegistrationNumber;
+  }
+
+  return `${cleanedNumber.slice(0, 3)}-${cleanedNumber.slice(3, 5)}-${cleanedNumber.slice(5)}`;
+}
+
+export function formatPhoneNumber(phoneNumber: string | null | undefined): string {
+  if (!phoneNumber) return "";
+  const cleanedNumber = phoneNumber.replace(/\D/g, ""); // 숫자 이외의 문자 제거
+  const numberLength = cleanedNumber.length;
+
+  if (numberLength === 10) {
+    return `${cleanedNumber.slice(0, 3)}-${cleanedNumber.slice(3, 6)}-${cleanedNumber.slice(6)}`;
+  }
+
+  if (numberLength === 11) {
+    return `${cleanedNumber.slice(0, 3)}-${cleanedNumber.slice(3, 7)}-${cleanedNumber.slice(7)}`;
+  }
+
+  return phoneNumber; // 기본적으로 원래 값 반환
+}

@@ -12,8 +12,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { profileFormSchema, type ActionState, type Profile } from "@/app/lib/definitions";
-import { useActionState, useRef, useState } from "react";
+import { profileFormSchema, type Profile } from "@/app/lib/definitions";
+import { useActionState, useState } from "react";
 import { updateProfile } from "@/app/lib/profile";
 import { toast } from "sonner";
 import { notoSansKR } from "@/app/ui/fonts";
@@ -31,8 +31,7 @@ export default function ProfileForm({
 
 	const [state, formAction] = useActionState(updateProfile, {
 		message: null,
-	} as ActionState);
-  const formRef = useRef<HTMLFormElement>(null);
+	});
 
 	const form = useForm<Profile>({
 		resolver: zodResolver(profileFormSchema),
@@ -67,7 +66,6 @@ export default function ProfileForm({
 			</div>
 			<Form {...form}>
 				<form
-					ref={formRef}
 					action={formAction}
 					onSubmit={(e) => {
 						e.preventDefault();

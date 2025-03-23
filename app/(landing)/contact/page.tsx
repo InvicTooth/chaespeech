@@ -1,14 +1,268 @@
 "use client";
 
-import { useState } from "react";
 import * as motion from "motion/react-client";
+import { useForm, useFormState } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type * as z from "zod";
+import { startTransition, useActionState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import { type ActionState, contactFormSchema } from "@/app/lib/definitions";
+import { sendContactEmail } from "@/app/lib/contact";
+import { useSiteOwnerProfileStore } from "@/app/lib/store";
+import { formatPhoneNumber } from "@/app/lib/utils";
 
-interface ContactForm {
-	name: string;
-	phone: string;
-	email: string;
-	message: string;
-	service: string;
+const initialActionState: ActionState = {
+	status: "idle",
+	message: "",
+};
+
+export default function Contact() {
+	const { profile } = useSiteOwnerProfileStore();
+
+	const form = useForm<z.infer<typeof contactFormSchema>>({
+		resolver: zodResolver(contactFormSchema),
+		defaultValues: {
+			name: "",
+			phone: "",
+			email: "",
+			message: "",
+			service: undefined,
+		},
+	});
+	const { isSubmitting } = useFormState({ control: form.control });
+	const [actionState, formAction] = useActionState(
+		sendContactEmail,
+		initialActionState,
+	);
+
+	const onSubmit = (values: z.infer<typeof contactFormSchema>) => {
+		const formData = new FormData();
+		for (const [key, value] of Object.entries(values)) {
+			if (typeof value === "string") {
+				formData.append(key, value);
+			}
+		}
+
+		return formData;
+	};
+
+	return (
+		<motion.div
+			className="min-h-screen bg-gray-50"
+			variants={containerVariants}
+			initial="hidden"
+			animate="visible"
+		>
+			{/* Hero Section */}
+			<motion.section
+				className="bg-[var(--color-neutral)] text-white py-24"
+				variants={heroVariants}
+			>
+				<div className="container mx-auto px-4 pt-6">
+					<motion.h1
+						className="text-4xl font-bold mb-4"
+						variants={itemVariants}
+					>
+						문의하기
+					</motion.h1>
+					<motion.p className="text-xl opacity-90" variants={itemVariants}>
+						궁금하신 점이나 상담 요청을 남겨주세요
+					</motion.p>
+				</div>
+			</motion.section>
+
+			{/* Main Content */}
+			<div className="container mx-auto px-4 py-12">
+				<div className="max-w-4xl mx-auto">
+					{/* Contact Form */}
+					<motion.div
+						className="bg-white rounded-xl shadow-lg p-8 mb-8"
+						variants={itemVariants}
+					>
+						<Form {...form}>
+							<form
+								className="space-y-6"
+								action={formAction}
+								onSubmit={(e) => {
+									e.preventDefault();
+									form.handleSubmit(() => {
+										startTransition(() =>
+											formAction(onSubmit(form.getValues())),
+										);
+									})(e);
+								}}
+							>
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+									{/* Name Input */}
+									<FormField
+										control={form.control}
+										name="name"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>이름 *</FormLabel>
+												<FormControl>
+													<Input placeholder="이름을 입력해주세요" {...field} />
+												</FormControl>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+
+									{/* Phone Input */}
+									<FormField
+										control={form.control}
+										name="phone"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>연락처 *</FormLabel>
+												<FormControl>
+													<Input placeholder="010-0000-0000" {...field} />
+												</FormControl>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+
+									{/* Email Input */}
+									<FormField
+										control={form.control}
+										name="email"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>이메일</FormLabel>
+												<FormControl>
+													<Input
+														type="email"
+														placeholder="이메일을 입력해주세요"
+														{...field}
+													/>
+												</FormControl>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+
+									{/* Service Select */}
+									<FormField
+										control={form.control}
+										name="service"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>문의 서비스 *</FormLabel>
+												<Select
+													onValueChange={field.onChange}
+													defaultValue={field.value}
+												>
+													<FormControl>
+														<SelectTrigger className="w-full">
+															<SelectValue placeholder="문의 서비스를 선택해주세요" />
+														</SelectTrigger>
+													</FormControl>
+													<SelectContent>
+														<SelectItem value="컨설팅">1:1 컨설팅</SelectItem>
+														<SelectItem value="강의">강의 문의</SelectItem>
+														<SelectItem value="행사">행사 진행</SelectItem>
+														<SelectItem value="기타">기타 문의</SelectItem>
+													</SelectContent>
+												</Select>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+								</div>
+
+								{/* Message Input */}
+								<FormField
+									control={form.control}
+									name="message"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel>문의 내용 *</FormLabel>
+											<FormControl>
+												<Textarea
+													placeholder="문의 내용을 입력해주세요"
+													className="resize-none h-48"
+													{...field}
+												/>
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
+
+								{/* Submit Button */}
+								<div className="flex justify-end">
+									<Button
+										type="submit"
+										disabled={
+											isSubmitting || actionState.status === "submitting"
+										}
+									>
+										{actionState.status === "submitting"
+											? "문의 접수 중..."
+											: "문의하기"}
+									</Button>
+								</div>
+								{actionState.status === "success" && (
+									<div className="text-green-500">{actionState.message}</div>
+								)}
+								{actionState.status === "error" && (
+									<div className="text-red-500">{actionState.message}</div>
+								)}
+							</form>
+						</Form>
+					</motion.div>
+
+					{/* Additional Contact Information */}
+					<motion.div
+						className="grid grid-cols-1 md:grid-cols-3 gap-6"
+						variants={containerVariants}
+					>
+						<motion.div
+							className="bg-white p-6 rounded-lg shadow text-center"
+							variants={contactInfoVariants}
+						>
+							<h3 className="font-semibold mb-2">이메일</h3>
+							<p className="text-gray-600">{profile?.email}</p>
+						</motion.div>
+						<motion.div
+							className="bg-white p-6 rounded-lg shadow text-center"
+							variants={contactInfoVariants}
+						>
+							<h3 className="font-semibold mb-2">전화</h3>
+							<p className="text-gray-600">
+								{formatPhoneNumber(profile?.phone)}
+							</p>
+						</motion.div>
+						<motion.div
+							className="bg-white p-6 rounded-lg shadow text-center"
+							variants={contactInfoVariants}
+						>
+							<h3 className="font-semibold mb-2">SNS</h3>
+							<p className="text-gray-600">{profile?.name}</p>
+						</motion.div>
+					</motion.div>
+				</div>
+			</div>
+		</motion.div>
+	);
 }
 
 const containerVariants = {
@@ -56,203 +310,3 @@ const contactInfoVariants = {
 		},
 	},
 };
-
-export default function Contact() {
-	const [formData, setFormData] = useState<ContactForm>({
-		name: "",
-		phone: "",
-		email: "",
-		message: "",
-		service: "컨설팅",
-	});
-
-	const handleSubmit = (e: React.FormEvent) => {
-		e.preventDefault();
-		// TODO: 폼 제출 로직 구현
-		console.log("Form submitted:", formData);
-	};
-
-	return (
-		<motion.div
-			className="min-h-screen bg-gray-50"
-			variants={containerVariants}
-			initial="hidden"
-			animate="visible"
-		>
-			{/* 히어로 섹션 */}
-			<motion.section
-				className="bg-[var(--color-neutral)] text-white py-24"
-				variants={heroVariants}
-			>
-				<div className="container mx-auto px-4 pt-6">
-					<motion.h1
-						className="text-4xl font-bold mb-4"
-						variants={itemVariants}
-					>
-						문의하기
-					</motion.h1>
-					<motion.p className="text-xl opacity-90" variants={itemVariants}>
-						궁금하신 점이나 상담 요청을 남겨주세요
-					</motion.p>
-				</div>
-			</motion.section>
-
-			{/* 메인 콘텐츠 */}
-			<div className="container mx-auto px-4 py-12">
-				<div className="max-w-4xl mx-auto">
-					{/* 문의 폼 */}
-					<motion.div
-						className="bg-white rounded-xl shadow-lg p-8 mb-8"
-						variants={itemVariants}
-					>
-						<form onSubmit={handleSubmit} className="space-y-6">
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-								{/* 이름 입력 */}
-								<div>
-									<label
-										htmlFor="name"
-										className="block text-gray-700 font-medium mb-2"
-									>
-										이름 *
-									</label>
-									<input
-										type="text"
-										id="name"
-										required
-										className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--color-brand-red)] focus:border-transparent"
-										value={formData.name}
-										onChange={(e) =>
-											setFormData({ ...formData, name: e.target.value })
-										}
-									/>
-								</div>
-
-								{/* 연락처 입력 */}
-								<div>
-									<label
-										htmlFor="phone"
-										className="block text-gray-700 font-medium mb-2"
-									>
-										연락처 *
-									</label>
-									<input
-										type="tel"
-										id="phone"
-										required
-										placeholder="010-0000-0000"
-										className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--color-brand-red)] focus:border-transparent"
-										value={formData.phone}
-										onChange={(e) =>
-											setFormData({ ...formData, phone: e.target.value })
-										}
-									/>
-								</div>
-
-								{/* 이메일 입력 */}
-								<div>
-									<label
-										htmlFor="email"
-										className="block text-gray-700 font-medium mb-2"
-									>
-										이메일
-									</label>
-									<input
-										type="email"
-										id="email"
-										className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--color-brand-red)] focus:border-transparent"
-										value={formData.email}
-										onChange={(e) =>
-											setFormData({ ...formData, email: e.target.value })
-										}
-									/>
-								</div>
-
-								{/* 서비스 선택 */}
-								<div>
-									<label
-										htmlFor="service"
-										className="block text-gray-700 font-medium mb-2"
-									>
-										문의 서비스 *
-									</label>
-									<select
-										id="service"
-										required
-										className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--color-brand-red)] focus:border-transparent"
-										value={formData.service}
-										onChange={(e) =>
-											setFormData({ ...formData, service: e.target.value })
-										}
-									>
-										<option value="컨설팅">1:1 컨설팅</option>
-										<option value="강의">강의 문의</option>
-										<option value="행사">행사 진행</option>
-										<option value="기타">기타 문의</option>
-									</select>
-								</div>
-							</div>
-
-							{/* 메시지 입력 */}
-							<div>
-								<label
-									htmlFor="message"
-									className="block text-gray-700 font-medium mb-2"
-								>
-									문의 내용 *
-								</label>
-								<textarea
-									id="message"
-									required
-									rows={6}
-									className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--color-brand-red)] focus:border-transparent resize-none"
-									value={formData.message}
-									onChange={(e) =>
-										setFormData({ ...formData, message: e.target.value })
-									}
-								/>
-							</div>
-
-							{/* 제출 버튼 */}
-							<div className="flex justify-end">
-								<button
-									type="submit"
-									className="px-8 py-3 bg-[var(--color-brand-red)] text-white rounded-lg hover:bg-[var(--color-brand-red)]/90 transition-colors"
-								>
-									문의하기
-								</button>
-							</div>
-						</form>
-					</motion.div>
-
-					{/* 추가 연락처 정보 */}
-					<motion.div
-						className="grid grid-cols-1 md:grid-cols-3 gap-6"
-						variants={containerVariants}
-					>
-						<motion.div
-							className="bg-white p-6 rounded-lg shadow text-center"
-							variants={contactInfoVariants}
-						>
-							<h3 className="font-semibold mb-2">이메일</h3>
-							<p className="text-gray-600">contact@example.com</p>
-						</motion.div>
-						<motion.div
-							className="bg-white p-6 rounded-lg shadow text-center"
-							variants={contactInfoVariants}
-						>
-							<h3 className="font-semibold mb-2">전화</h3>
-							<p className="text-gray-600">010-1234-5678</p>
-						</motion.div>
-						<motion.div
-							className="bg-white p-6 rounded-lg shadow text-center"
-							variants={contactInfoVariants}
-						>
-							<h3 className="font-semibold mb-2">SNS</h3>
-							<p className="text-gray-600">@speechcoach</p>
-						</motion.div>
-					</motion.div>
-				</div>
-			</div>
-		</motion.div>
-	);
-}

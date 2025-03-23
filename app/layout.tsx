@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 	metadataBase: new URL("https://chaespeech.vercel.app"),
 };
 
-export default function RootLayout({
+export default async function RootLayout({
 	children,
 }: {
 	children: React.ReactNode;

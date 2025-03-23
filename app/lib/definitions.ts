@@ -44,12 +44,14 @@ export const colors = [
 
 export const developerId = process.env.SITE_DEVELOPER_ID;
 export const ownerId = process.env.SITE_OWNER_ID;
+export const ownerSMTPPassword = process.env.SITE_OWNER_SMTP_PASSWORD;
 
 export type ActionState = {
-  message: string | null,
+  status?: "idle" | "submitting" | "success" | "error",
+  message?: string | null,
   errors?: {
     [key: string]: string[]
-  }
+  },
 };
 
 export const activityFormSchema = z.object({
@@ -84,4 +86,20 @@ export const profileFormSchema = z.object({
   bank: z.string(),
   accountNumber: z.string(),
   depositor: z.string(),
+});
+
+
+export const contactFormSchema = z.object({
+  name: z.string().min(2, {
+    message: "이름은 최소 2글자 이상이어야 합니다.",
+  }),
+  phone: z
+    .string(),
+  email: z
+    .string()
+    .email({ message: "올바른 이메일 형식이 아닙니다." }),
+  message: z
+    .string()
+    .min(10, { message: "문의 내용은 최소 10글자 이상이어야 합니다." }),
+  service: z.string().min(2),
 });

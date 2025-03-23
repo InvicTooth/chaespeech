@@ -168,7 +168,7 @@ const FormSchema = z.object({
   mediaUrl: z.string().optional(),
 });
 
-export async function createActivity(prevState: ActionState, formData: FormData) {
+export async function createActivity(prevState: ActionState, formData: FormData): Promise<ActionState> {
   const session = await auth();
   if (session?.user?.id == null)
     redirect('/login');
@@ -215,7 +215,7 @@ export async function createActivity(prevState: ActionState, formData: FormData)
   return { message: 'Activity created successfully.' };
 }
 
-export async function updateActivity(id: bigint, prevState: ActionState, formData: FormData) {
+export async function updateActivity(id: bigint, prevState: ActionState, formData: FormData): Promise<ActionState> {
   const session = await auth();
   if (session?.user?.id == null)
     redirect('/login');

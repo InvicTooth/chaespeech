@@ -85,6 +85,7 @@ const HeroSection = () => {
 						<Image
 							src="/pictures/01.jpg"
 							alt="박채은 강사"
+							sizes="100vw"
 							fill
 							className="rounded-2xl object-cover shadow-xl"
 							priority
