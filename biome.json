@@ -3,6 +3,12 @@
 		"rules": {
 			"suspicious": {
 				"noArrayIndexKey": "info"
+			},
+			"style": {
+				"noNonNullAssertion": "info"
+			},
+			"a11y": {
+				"useMediaCaption": "off"
 			}
 		}
 	}

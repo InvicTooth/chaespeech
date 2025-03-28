@@ -2,9 +2,7 @@ import { fetchActivitiesForVisitors } from "@/app/lib/activity";
 import * as motion from "motion/react-client";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
-import { isImage, isVideo } from "@/app/lib/utils";
-import Image from "next/image";
-import Link from "next/link";
+import Media from "@/app/ui/media";
 
 export default async function Lectures() {
 	const lectures = await fetchActivitiesForVisitors({
@@ -141,30 +139,7 @@ export default async function Lectures() {
 										</div>
 										{lecture.mediaUrl && (
 											<div className="mt-3">
-												{/* 이미지 또는 동영상 여부 판단 */}
-												{isImage(lecture.mediaUrl) ? (
-													<Image
-														src={lecture.mediaUrl}
-														alt="강의 관련 이미지"
-														className="w-full h-48 object-cover rounded-md"
-													/>
-												) : isVideo(lecture.mediaUrl) ? (
-													<video
-														muted
-														src={lecture.mediaUrl}
-														controls
-														className="w-full h-48 object-cover rounded-md"
-													/>
-												) : (
-													<Link
-														href={lecture.mediaUrl}
-														target="_blank"
-														rel="noopener noreferrer"
-														className="text-blue-500 hover:underline"
-													>
-														관련 자료 보기
-													</Link>
-												)}
+												<Media src={lecture.mediaUrl} size={300} />
 											</div>
 										)}
 									</div>

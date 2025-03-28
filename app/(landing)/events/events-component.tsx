@@ -4,11 +4,9 @@ import { useEffect, useState } from "react";
 import * as motion from "motion/react-client";
 import { activityTypes } from "@/app/lib/definitions";
 import type { Activity } from "@/app/lib/definitions";
-import { isImage, isVideo } from "@/app/lib/utils";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
-import Image from "next/image";
-import Link from "next/link";
+import Media from "@/app/ui/media";
 
 // New Type Definition for Categorized Events
 type CategorizedEvents = {
@@ -132,31 +130,7 @@ export function EventsClientComponent({ events }: { events: Activity[] }) {
 											<div className="relative h-48 bg-gray-200">
 												{event.mediaUrl && (
 													<div className="mt-3">
-														{isImage(event.mediaUrl) ? (
-															<Image
-																src={event.mediaUrl}
-																alt="강의 관련 이미지"
-																width={500}
-																height={300}
-																className="w-full h-48 object-cover rounded-md"
-															/>
-														) : isVideo(event.mediaUrl) ? (
-															<video
-																muted
-																src={event.mediaUrl}
-																controls
-																className="w-full h-48 object-cover rounded-md"
-															/>
-														) : (
-															<Link
-																href={event.mediaUrl}
-																target="_blank"
-																rel="noopener noreferrer"
-																className="text-blue-500 hover:underline"
-															>
-																관련 자료 보기
-															</Link>
-														)}
+														<Media src={event.mediaUrl} size={300} />
 													</div>
 												)}
 												<div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" />

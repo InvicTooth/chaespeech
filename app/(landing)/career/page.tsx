@@ -2,9 +2,7 @@ import { fetchActivitiesForVisitors } from "@/app/lib/activity";
 import * as motion from "motion/react-client";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
-import { isImage, isVideo } from "@/app/lib/utils";
-import Image from "next/image";
-import Link from "next/link";
+import Media from "@/app/ui/media";
 
 const Career = async () => {
 	const careers = await fetchActivitiesForVisitors({
@@ -119,43 +117,7 @@ const Career = async () => {
 											</div>
 											{career.mediaUrl && (
 												<div className="mt-3">
-													<a
-														href={career.mediaUrl}
-														target="_blank"
-														rel="noopener noreferrer"
-														className="text-blue-500 hover:underline"
-													>
-														관련 자료 보기
-													</a>
-												</div>
-											)}
-											{/* 추가된 부분 */}
-											{career.mediaUrl && (
-												<div className="mt-3">
-													{/* 이미지 또는 동영상 여부 판단 */}
-													{isImage(career.mediaUrl) ? (
-														<Image
-															src={career.mediaUrl}
-															alt="경력 관련 이미지"
-															className="w-full h-48 object-cover rounded-md"
-														/>
-													) : isVideo(career.mediaUrl) ? (
-														<video
-															muted
-															src={career.mediaUrl}
-															controls
-															className="w-full h-48 object-cover rounded-md"
-														/>
-													) : (
-														<Link
-															href={career.mediaUrl}
-															target="_blank"
-															rel="noopener noreferrer"
-															className="text-blue-500 hover:underline"
-														>
-															관련 자료 보기
-														</Link>
-													)}
+													<Media src={career.mediaUrl} size={300} />
 												</div>
 											)}
 										</div>
@@ -217,30 +179,7 @@ const Career = async () => {
 										</div>
 										{career.mediaUrl && (
 											<div className="mt-3">
-												{/* 이미지 또는 동영상 여부 판단 */}
-												{isImage(career.mediaUrl) ? (
-													<Image
-														src={career.mediaUrl}
-														alt="경력 관련 이미지"
-														className="w-full h-48 object-cover rounded-md"
-													/>
-												) : isVideo(career.mediaUrl) ? (
-													<video
-														muted
-														src={career.mediaUrl}
-														controls
-														className="w-full h-48 object-cover rounded-md"
-													/>
-												) : (
-													<Link
-														href={career.mediaUrl}
-														target="_blank"
-														rel="noopener noreferrer"
-														className="text-blue-500 hover:underline"
-													>
-														관련 자료 보기
-													</Link>
-												)}
+												<Media src={career.mediaUrl} size={300} />
 											</div>
 										)}
 									</div>

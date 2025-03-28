@@ -1,7 +1,7 @@
 "use client";
 
 import { startTransition, useActionState } from "react";
-import { Type } from "lucide-react";
+import { ImageIcon, Type } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -36,10 +36,11 @@ import {
 	activityTypes,
 	activityFormSchema,
 } from "@/app/lib/definitions";
+import Media from "../media";
 
 export default function EditActivityForm({ activity }: { activity: Activity }) {
 	const updateActivityWithId = updateActivity.bind(null, activity.id);
-	const [state, formAction] = useActionState(updateActivityWithId, {
+	const [state, formAction, isPending] = useActionState(updateActivityWithId, {
 		message: null,
 		errors: {},
 	});
@@ -51,6 +52,7 @@ export default function EditActivityForm({ activity }: { activity: Activity }) {
 			type: activity.type,
 			content: activity.content,
 			mediaUrl: activity.mediaUrl,
+			mediaFile: undefined,
 			date: {
 				from: activity.startAt,
 				to: activity.endAt,
@@ -61,9 +63,7 @@ export default function EditActivityForm({ activity }: { activity: Activity }) {
 	const onSubmit = (values: z.infer<typeof activityFormSchema>) => {
 		const formData = new FormData();
 		for (const [key, value] of Object.entries(values)) {
-			if (typeof value === "string") {
-				formData.append(key, value);
-			} else if (value !== undefined) {
+			if (key === "date") {
 				const { from, to } = value as DateRange;
 				formData.append(
 					"startAt",
@@ -73,6 +73,8 @@ export default function EditActivityForm({ activity }: { activity: Activity }) {
 					"endAt",
 					to ? format(to, "yyyy-MM-dd HH:mm:ss", { locale: ko }) : "",
 				);
+			} else {
+				formData.append(key, value as string | File);
 			}
 		}
 		return formData;
@@ -236,32 +238,55 @@ export default function EditActivityForm({ activity }: { activity: Activity }) {
 						/>
 						<FormField
 							control={form.control}
-							name="mediaUrl"
+							name="mediaFile"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>사진(미구현)</FormLabel>
+									<FormLabel>사진</FormLabel>
 									<FormControl>
 										<div className="relative">
 											<Input
-												placeholder="사진 URL을 입력하세요"
-												className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-												{...field}
+												type="file"
+												accept="image/*, video/*, audio/*"
+												className="peer block rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+												onChange={(event) => {
+													if (event.target.files) {
+														field.onChange(event.target.files[0]);
+													}
+												}}
 											/>
-											<Type className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+											<ImageIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
 										</div>
 									</FormControl>
+									{field.value && <Media file={field.value} size={200} />}
 									<FormMessage />
 									<div
-										id="mediaUrl-error"
+										id="mediaFile-error"
 										aria-live="polite"
 										aria-atomic="true"
 									>
-										{state.errors?.mediaUrl?.map((error: string) => (
+										{state.errors?.mediaFile?.map((error: string) => (
 											<p className="mt-2 text-sm text-red-500" key={error}>
 												{error}
 											</p>
 										))}
 									</div>
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name="mediaUrl"
+							render={({ field }) => (
+								<FormItem>
+									<FormControl>
+										<Input
+											type="hidden"
+											placeholder=""
+											className="peer block rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+											{...field}
+										/>
+									</FormControl>
+									{field.value && <Media src={field.value} size={200} />}
 								</FormItem>
 							)}
 						/>
@@ -275,7 +300,9 @@ export default function EditActivityForm({ activity }: { activity: Activity }) {
 							>
 								Cancel
 							</Link>
-							<Button type="submit">Save Changes</Button>
+							<Button type="submit" disabled={isPending}>
+								{isPending ? "Saving..." : "Save Changes"}
+							</Button>
 						</div>
 					</form>
 				</Form>

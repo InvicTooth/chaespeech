@@ -71,6 +71,7 @@ import {
 	UpdateActivity,
 } from "@/app/ui/activities/buttons";
 import Search from "./search";
+import Media from "../media";
 
 export const schema = z.object({
 	id: z.bigint(),
@@ -168,7 +169,9 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
 		header: "미디어",
 		cell: ({ row }) => {
 			return (
-				<div className="max-w-[200px] truncate">{row.original.mediaUrl}</div>
+				<div className="max-w-[200px] truncate">
+					<Media src={row.original.mediaUrl} size={50} />
+				</div>
 			);
 		},
 	},

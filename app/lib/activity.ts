@@ -6,6 +6,7 @@ import { prisma } from '@/prisma/client';
 import { z } from 'zod';
 import { auth } from '@/auth';
 import { type ActionState, ownerId } from '@/app/lib/definitions';
+import { deleteFormStorage, uploadToStorage } from '@/supabase/server';
 
 export async function fetchActivitiesByType() {
   const session = await auth();
@@ -166,6 +167,7 @@ const FormSchema = z.object({
   endAt: z.coerce.date({ required_error: 'End Date is required' }),
   content: z.string().optional(),
   mediaUrl: z.string().optional(),
+  mediaFile: z.instanceof(File).optional(),
 });
 
 export async function createActivity(prevState: ActionState, formData: FormData): Promise<ActionState> {
@@ -180,6 +182,7 @@ export async function createActivity(prevState: ActionState, formData: FormData)
     endAt: formData.get('endAt'),
     content: formData.get('content'),
     mediaUrl: formData.get('mediaUrl'),
+    mediaFile: formData.get("mediaFile"),
   });
 
   if (!validatedFields.success) {
@@ -189,7 +192,26 @@ export async function createActivity(prevState: ActionState, formData: FormData)
     };
   }
 
-  const { title, type, startAt, endAt, content, mediaUrl } = validatedFields.data;
+  const { title, type, startAt, endAt, content, mediaUrl, mediaFile } = validatedFields.data;
+
+
+  let publicUrl = '';
+  if (mediaFile) {
+    try {
+      publicUrl = await uploadToStorage(mediaFile, 'activities');
+    } catch (error) {
+      console.error(error);
+      return { message: `Storage Error: Failed to Create Activity. ${error}` };
+    }
+    if (mediaUrl) {
+      try {
+        await deleteFormStorage('activities', mediaUrl);
+      } catch (error) {
+        console.error(error);
+        return { message: `Storage Error: Failed to Create Activity. ${error}` };
+      }
+    }
+  }
 
   try {
     await prisma.activity.create({
@@ -199,7 +221,7 @@ export async function createActivity(prevState: ActionState, formData: FormData)
         startAt,
         endAt,
         content,
-        mediaUrl,
+        mediaUrl: publicUrl ?? mediaUrl,
         userId: session.user.id,
       },
     });
@@ -227,6 +249,7 @@ export async function updateActivity(id: bigint, prevState: ActionState, formDat
     endAt: formData.get('endAt'),
     content: formData.get('content'),
     mediaUrl: formData.get('mediaUrl'),
+    mediaFile: formData.get("mediaFile"),
   });
 
   if (!validatedFields.success) {
@@ -236,7 +259,25 @@ export async function updateActivity(id: bigint, prevState: ActionState, formDat
     };
   }
 
-  const { title, type, startAt, endAt, content, mediaUrl } = validatedFields.data;
+  const { title, type, startAt, endAt, content, mediaUrl, mediaFile } = validatedFields.data;
+
+  let publicUrl = '';
+  if (mediaFile) {
+    try {
+      publicUrl = await uploadToStorage(mediaFile, 'activities');
+    } catch (error) {
+      console.error(error);
+      return { message: `Storage Error: Failed to Create Activity. ${error}` };
+    }
+    if (mediaUrl) {
+      try {
+        await deleteFormStorage('activities', mediaUrl);
+      } catch (error) {
+        console.error(error);
+        return { message: `Storage Error: Failed to Create Activity. ${error}` };
+      }
+    }
+  }
 
   try {
     await prisma.activity.update({
@@ -249,7 +290,7 @@ export async function updateActivity(id: bigint, prevState: ActionState, formDat
         startAt,
         endAt,
         content,
-        mediaUrl,
+        mediaUrl: publicUrl ?? mediaUrl,
         userId: session.user.id,
       },
     });
@@ -270,12 +311,16 @@ export async function deleteActivity(id: bigint) {
     redirect('/login');
 
   try {
-    await prisma.activity.delete({
+    const activity = await prisma.activity.delete({
       where: {
         id: id,
         userId: session.user.id,
       },
     });
+    if (activity.mediaUrl) {
+      await deleteFormStorage('activities', activity.mediaUrl);
+    }
+
     revalidatePath('/dashboard/activities');
     revalidatePath('/dashboard');
   } catch (error) {

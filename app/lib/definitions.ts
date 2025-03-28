@@ -58,9 +58,10 @@ export const activityFormSchema = z.object({
   title: z.string().min(2, {
     message: "제목은 최소 2글자 이상이어야 합니다.",
   }),
-  type: z.string(),
+  type: z.coerce.string(),
   content: z.string().optional(),
   mediaUrl: z.string().optional(),
+  mediaFile: z.instanceof(File).optional(),
   date: z
     .object(
       {
@@ -69,9 +70,7 @@ export const activityFormSchema = z.object({
       },
       { required_error: "Date is required." },
     )
-    .refine((date) => {
-      return !!date.to;
-    }, "End Date is required."),
+    .refine((date) => !!date.to, "End Date is required."),
 });
 
 export const profileFormSchema = z.object({

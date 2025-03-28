@@ -4,8 +4,7 @@ import { fetchActivitiesForVisitors } from "@/app/lib/activity";
 import type { Activity } from "@/app/lib/definitions";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
-import Image from "next/image";
-import { isImage, isVideo } from "@/app/lib/utils";
+import Media from "@/app/ui/media";
 
 export default async function Consulting() {
 	const consultings: Activity[] = await fetchActivitiesForVisitors({
@@ -158,29 +157,7 @@ export default async function Consulting() {
 											</div>
 											{consulting.mediaUrl && (
 												<div className="mt-3">
-													{isImage(consulting.mediaUrl) ? (
-														<Image
-															src={consulting.mediaUrl}
-															alt="컨설팅 관련 이미지"
-															className="w-full h-48 object-cover rounded-md"
-														/>
-													) : isVideo(consulting.mediaUrl) ? (
-														<video
-															muted
-															src={consulting.mediaUrl}
-															controls
-															className="w-full h-48 object-cover rounded-md"
-														/>
-													) : (
-														<Link
-															href={consulting.mediaUrl}
-															target="_blank"
-															rel="noopener noreferrer"
-															className="text-blue-500 hover:underline"
-														>
-															관련 자료 보기
-														</Link>
-													)}
+													<Media src={consulting.mediaUrl} size={300} />
 												</div>
 											)}
 										</div>
