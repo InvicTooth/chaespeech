@@ -17,9 +17,9 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { ThemeChanger } from "@/app/ui/layout/nav-theme-changer";
 import Link from "next/link";
 import { ActivityIcon, UserPen } from "lucide-react";
+import ThemeChanger from "./nav-theme-changer";
 
 const data = {
 	user: {
